@@ -22,8 +22,6 @@ rule all:
 
 # define rule to download fastqs from NCBI
 rule download_fastq:
-    input:
-        sralist=lambda wildcards: samples
     output:
         fq1=f"{data_dir}/{{sample}}_1.fastq.gz",
         fq2=f"{data_dir}/{{sample}}_2.fastq.gz"
@@ -33,10 +31,7 @@ rule download_fastq:
         """
         echo -e "\\n\\n["$(date)"]\\n Load SRA-Toolkit...\\n\\n"
         module load SRA-Toolkit/2.11.1-centos_linux64
-
         echo -e "\\n["$(date)"]\\n Download {params.sra} from SRA database \\n"
         prefetch {params.sra} && fastq-dump --split-e --gzip {params.sra} -O {data_dir}
-        wait
         sleep 60
-        prefetch {params.sra} && fastq-dump --split-e --gzip {params.sra} -O {data_dir}
         """
