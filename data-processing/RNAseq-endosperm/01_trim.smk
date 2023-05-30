@@ -15,8 +15,7 @@ qc1_dir = f"{data_dir}/FASTQC1"
 qc2_dir = f"{data_dir}/FASTQC2"
 log_dir = f"{data_dir}/logs"
 
-samples = ["13", "41", "50", "15", "39", "46", "35", "52", "45", "31", "33", "48", "44", "47", "32", "36","34","53","49"]
-numbers = ["17", "24", "30", "7", "23", "26", "10", "15", "14", "8", "22", "28", "13", "27", "21", "11", "9", "16", "29"]
+samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11","34_S9","53_S16","49_S29"]
 
 # define output files for rule all
 rule all:
@@ -31,10 +30,10 @@ rule all:
 # define rule to combine raw fastqs across lanes 
 rule combine_fastq:
     input:
-        r1L1=expand(f"{raw_dir}/{{sample}}_S{{sample_num}}_L001_R1_001.fastq.gz", sample=samples, sample_num=numbers),
-        r1L2=expand(f"{raw_dir}/{{sample}}_S{{sample_num}}_L002_R1_001.fastq.gz", sample=samples, sample_num=numbers),
-        r2L1=expand(f"{raw_dir}/{{sample}}_S{{sample_num}}_L001_R2_001.fastq.gz", sample=samples, sample_num=numbers),
-        r2L2=expand(f"{raw_dir}/{{sample}}_S{{sample_num}}_L002_R2_001.fastq.gz", sample=samples, sample_num=numbers)
+        r1L1=f"{raw_dir}/{{sample}}_L001_R1_001.fastq.gz", 
+        r1L2=f"{raw_dir}/{{sample}}_L002_R1_001.fastq.gz",
+        r2L1=f"{raw_dir}/{{sample}}_L001_R2_001.fastq.gz",
+        r2L2=f"{raw_dir}/{{sample}}_L002_R2_001.fastq.gz"
     output:
         R1=f"{data_dir}/{{sample}}_R1.fastq.gz",
         R2=f"{data_dir}/{{sample}}_R2.fastq.gz"
