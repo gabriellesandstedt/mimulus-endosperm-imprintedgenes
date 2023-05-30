@@ -32,7 +32,7 @@ rule all:
 # define rule to combine raw fastqs across lanes 
 rule combine_fastq:
     input:
-        r1L1=f"{raw_dir}/{{sample}}_L001_R1_001.fastq.gz", 
+        r1L1=f"{raw_dir}/{{sample}}_L001_R1_001.fastq.gz",
         r1L2=f"{raw_dir}/{{sample}}_L002_R1_001.fastq.gz",
         r2L1=f"{raw_dir}/{{sample}}_L001_R2_001.fastq.gz",
         r2L2=f"{raw_dir}/{{sample}}_L002_R2_001.fastq.gz"
@@ -41,8 +41,8 @@ rule combine_fastq:
         R2=f"{data_dir}/{{sample}}_R2.fastq.gz"
     shell:
         """
-        cat {input.r1L1} {input.r1L2} > {output.R1}
-        cat {input.r2L1} {input.r2L2} > {output.R2}
+        gunzip -c {input.r1L1} {input.r1L2} | gzip > {output.R1}
+        gunzip -c {input.r2L1} {input.r2L2} | gzip > {output.R2}
         """
 
 # define rule to assess quality of fastqs with FastQC
