@@ -37,8 +37,8 @@ rule fastqc_raw:
         fqc1=f"{qc1_dir}/{{sample}}_1_fastqc.html",
         fqc2=f"{qc1_dir}/{{sample}}_2_fastqc.html"
     log:
-        log1=f"{log_dir}/fqc1_{{sample}}_1.log",
-        log2=f"{log_dir}/fqc1_{{sample}}_2.log"
+        log1=f"{log_dir}/fqc_{{sample}}_1.log",
+        log2=f"{log_dir}/fqc_{{sample}}_2.log"
     shell:
         """
         module load FastQC/0.12.1-Java-11
@@ -79,8 +79,8 @@ rule fastqc_trimmed:
         trim_fqc1=f"{qc2_dir}/{{sample}}_1_fastqc.html",
         trim_fqc2=f"{qc2_dir}/{{sample}}_2_fastqc.html"
     log:
-        log1=f"{log_dir}/trim_fqc1_{{sample}}_1.log",
-        log2=f"{log_dir}/trim_fqc1_{{sample}}_2.log"
+        log1=f"{log_dir}/trim_fqc_{{sample}}_1.log",
+        log2=f"{log_dir}/trim_fqc_{{sample}}_2.log"
     shell:
         """
         module load FastQC/0.12.1-Java-11
