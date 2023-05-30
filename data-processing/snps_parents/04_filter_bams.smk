@@ -1,10 +1,8 @@
 ################################################################################
-## Add readgroups using picardtools, and mark duplicates,
+## Add readgroups, mark and remove duplicates, adjust fixmate information, & ensure paired end reads map together
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
-## Picardtools: https://broadinstitute.github.io/picard/
-## Samtools v 1.16 : https://github.com/samtools/samtools
 ## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 04_filter_bams.smk
 ################################################################################
 ################################################################################
