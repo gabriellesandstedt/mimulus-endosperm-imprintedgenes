@@ -26,7 +26,7 @@ samples=["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "5
 rule all: 
     input:
         f"{repeatmasker_dir}/{masked_ref2}",
-        expand(f"{data_dir}/{sample}.bam", sample=samples)
+        expand(f"{data_dir}/{{sample}}.bam", sample=samples)
 
 # define rule to mask repetitive elements in the genome
 rule repeatmasker:
@@ -75,7 +75,7 @@ rule star_alignment:
     params:
         sample="{sample}"
     output:
-        bam=f"{data_dir}/{sample}.bam"
+        bam=f"{data_dir}/{{sample}}.bam"
     shell:
         """
         ml STAR/2.7.10a-GCC-8.3.0
