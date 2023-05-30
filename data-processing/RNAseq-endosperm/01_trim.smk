@@ -30,7 +30,7 @@ rule all:
         expand(f"{qc2_dir}/{{sample}}_R1_trim_fastqc.html", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_R2_trim_fastqc.html", sample=samples)
 
-rule combine_fastq:
+rule combine_fastqs:
     input:
         r1L1=expand(f"{raw_dir}/{{sample}}_S{{sample_num}}_L001_R1_001.fastq.gz", sample=samples, sample_num=numbers),
         r1L2=expand(f"{raw_dir}/{{sample}}_S{{sample_num}}_L002_R1_001.fastq.gz", sample=samples, sample_num=numbers),
