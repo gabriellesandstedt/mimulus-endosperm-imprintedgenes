@@ -3,7 +3,8 @@
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
-## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 02_trim.smk
+## snakemake version: 6.3.0
+## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 13 -s 02_trim.smk
 ################################################################################
 ################################################################################
 import os
@@ -19,14 +20,14 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 
 # define output files for rule all
 rule all:
-    input:
+    output:
         expand(f"{qc1_dir}/{{sample}}_1_fastqc.html", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_2_fastqc.html", sample=samples),
         expand(f"{data_dir}/{{sample}}_1_trim.fq.gz", sample=samples),
         expand(f"{data_dir}/{{sample}}_2_trim.fq.gz", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_1_trim_fastqc.html", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_2_trim_fastqc.html", sample=samples)
-
+        
 # define rule to assess quality of fastqs with FastQC
 # FASTQC v 0.12.1 : https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 rule fastqc_raw:
@@ -37,8 +38,8 @@ rule fastqc_raw:
         fqc1=f"{qc1_dir}/{{sample}}_1_fastqc.html",
         fqc2=f"{qc1_dir}/{{sample}}_2_fastqc.html"
     log:
-        log1=f"{log_dir}/fqc_{{sample}}_1.log",
-        log2=f"{log_dir}/fqc_{{sample}}_2.log"
+        log1=f"{log_dir}/{{sample}}_1.log",
+        log2=f"{log_dir}/{{sample}}_2.log"
     shell:
         """
         module load FastQC/0.12.1-Java-11
@@ -50,7 +51,6 @@ rule fastqc_raw:
         fastqc -o {qc1_dir} --noextract {input.fq2} &> {log.log2}
         echo -e "\\n["$(date)"]\\n FastQC round 1 finished ...\\n"
         """
-
 # define rule to trim adapter sequences and filter raw fastq reads using trimmomatic
 # trimmomatic v 0.39: http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf
 rule trimmomatic:
@@ -79,16 +79,16 @@ rule fastqc_trimmed:
         trim_fqc1=f"{qc2_dir}/{{sample}}_1_trim_fastqc.html",
         trim_fqc2=f"{qc2_dir}/{{sample}}_2_trim_fastqc.html"
     log:
-        log1=f"{log_dir}/trim_fqc_{{sample}}_1.log",
-        log2=f"{log_dir}/trim_fqc_{{sample}}_2.log"
+        log1=f"{log_dir}/trim_{{sample}}_1.log",
+        log2=f"{log_dir}/trim_{{sample}}_2.log"
     shell:
         """
         module load FastQC/0.12.1-Java-11
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq1} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.trim_fq1} &> {log.log1}
-        echo -e "\\n["$(date)"]\\n FastQC round 1 finished ...\\n"
+        echo -e "\\n["$(date)"]\\n FastQC round 2 finished ...\\n"
 
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq2} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.trim_fq2} &> {log.log2}
-        echo -e "\\n["$(date)"]\\n FastQC round 1 finished ...\\n"
+        echo -e "\\n["$(date)"]\\n FastQC round 2 finished ...\\n"
         """
