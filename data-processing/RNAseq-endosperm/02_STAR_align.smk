@@ -6,11 +6,14 @@
 ## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 02_STAR_align.smk
 ################################################################################
 ################################################################################
+import os 
+import glob
 
 # assign directories
 ref_dir="/scratch/gds44474/MIMULUS/ref_genome"
 repeatmasker_dir="/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker"
-STAR_genome_dir="/scratch/gds44474/MIMULUS/ref_genome/STAR_genome"
+STAR_genome_dir="/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker/STAR_genome"
+STAR_genome_dir_PASS2="/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker/STAR_genome/PASS2"
 data_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data"
 
 # assign genome files
@@ -65,7 +68,7 @@ rule create_star_index:
         """
         
 # define rule to align fastqs to masked reference genome
-rule star_alignment:
+rule star_alignment_pass1:
     input:
         masked_fa2=f"{repeatmasker_dir}/{masked_ref2}",
         gff=f"{ref_dir}/{gff}",
@@ -80,6 +83,34 @@ rule star_alignment:
         """
         ml STAR/2.7.10a-GCC-8.3.0
         STAR --runThreadN 12 --genomeDir {input.directory} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.R1} {input.R2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {output.bam} --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{params.sample} LB:IM62.v3 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{params.sample}
+        """
+        
+rule find_split_junction_files:
+    input:
+       directory=directory(f"{STAR_genome_dir}")
+    output:
+        sj_files = expand("path/to/{sample}_SJ.out.tab", sample=glob_wildcards("path/to/inDir/{sample}_SJ.out.tab"))
+    shell:
+        """
+        SJ=$(find {input.directory}/*SJ.out.tab | tr '\\n' ' ')
+        """
+        
+rule star_alignment_pass2:
+    input:
+        masked_fa2=f"{repeatmasker_dir}/{masked_ref2}",
+        gff=f"{ref_dir}/{gff}",
+        R1=expand(f"{data_dir}/{{sample}}_R1.trim.fastq.gz", sample=samples),
+        R2=expand(f"{data_dir}/{{sample}}_R2.trim.fastq.gz", sample=samples),
+        sj_files=output.sj_files  # Pass the sj_files output from find_sj_files rule
+    params:
+        sample="{sample}"
+    output:
+        directory=directory(f"{STAR_genome_dir_PASS2}"),
+        bam=f"{data_dir}/{{sample}}.bam"
+    shell:
+        """
+        ml STAR/2.7.10a-GCC-8.3.0
+        STAR --runThreadN 12 --genomeDir {input.directory} --sjdbFileChrStartEnd {input.sj_files} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.R1} {input.R2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {output.bam} --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{params.sample} LB:IM62.v3 DS:RNAseq
         """
 
 
