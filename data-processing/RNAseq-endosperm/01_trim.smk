@@ -21,13 +21,13 @@ samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", 
 rule all:
     input:
         expand(f"{data_dir}/{{sample}}_R1.fastq.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_R1.fastq.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_R2.fastq.gz", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_R1_fastqc.html", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_R2_fastqc.html", sample=samples),
         expand(f"{data_dir}/{{sample}}_R1_trim.fq.gz", sample=samples),
         expand(f"{data_dir}/{{sample}}_R2_trim.fq.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_R1_trim_fastqc.html", sample=samples),
-        expand(f"{data_dir}/{{sample}}_R2_trim_fastqc.html", sample=samples)
+        expand(f"{qc2_dir}/{{sample}}_R1_trim_fastqc.html", sample=samples),
+        expand(f"{qc2_dir}/{{sample}}_R2_trim_fastqc.html", sample=samples)
 
 # define rule to combine raw fastqs across lanes 
 rule combine_fastq:
@@ -91,8 +91,8 @@ rule trimmomatic:
 # FASTQC v 0.12.1 : https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 rule fastqc_trimmed:
     input:
-        trim_fq1=f"{data_dir}/{{sample}}_R1.fastq.gz",
-        trim_fq2=f"{data_dir}/{{sample}}_R2.fastq.gz"
+        trim_fq1=f"{data_dir}/{{sample}}_R1.fq.gz",
+        trim_fq2=f"{data_dir}/{{sample}}_R2.fq.gz"
     output:
         trim_fqc1=f"{qc2_dir}/{{sample}}_R1_fastqc.html",
         trim_fqc2=f"{qc2_dir}/{{sample}}_R2_fastqc.html"
