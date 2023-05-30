@@ -20,6 +20,8 @@ samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", 
 # define output files for rule all
 rule all:
     input:
+        expand(f"{data_dir}/{{sample}}_R1.fastq.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_R1.fastq.gz", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_R1_fastqc.html", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_R2_fastqc.html", sample=samples),
         expand(f"{data_dir}/{{sample}}_R1_trim.fq.gz", sample=samples),
