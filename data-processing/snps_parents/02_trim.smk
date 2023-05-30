@@ -14,7 +14,7 @@ qc1_dir = f"{data_dir}/FASTQC1"
 qc2_dir = f"{data_dir}/FASTQC2"
 log_dir = f"{data_dir}/logs"
 
-# assign samples to be trimmed 
+# assign samples to be trimmed
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 
 # define output files for rule all
@@ -24,8 +24,8 @@ rule all:
         expand(f"{qc1_dir}/{{sample}}_2_fastqc.html", sample=samples),
         expand(f"{data_dir}/{{sample}}_1_trim.fq.gz", sample=samples),
         expand(f"{data_dir}/{{sample}}_2_trim.fq.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_1_trim_fastqc.html", sample=samples),
-        expand(f"{data_dir}/{{sample}}_2_trim_fastqc.html", sample=samples)
+        expand(f"{qc2_dir}/{{sample}}_1_trim_fastqc.html", sample=samples),
+        expand(f"{qc2_dir}/{{sample}}_2_trim_fastqc.html", sample=samples)
 
 # define rule to assess quality of fastqs with FastQC
 # FASTQC v 0.12.1 : https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
@@ -73,11 +73,11 @@ rule trimmomatic:
 # FASTQC v 0.12.1 : https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 rule fastqc_trimmed:
     input:
-        trim_fq1=f"{data_dir}/{{sample}}_1.fastq.gz",
-        trim_fq2=f"{data_dir}/{{sample}}_2.fastq.gz"
+        trim_fq1=f"{data_dir}/{{sample}}_1_trim.fq.gz",
+        trim_fq2=f"{data_dir}/{{sample}}_2_trim.fq.gz"
     output:
-        trim_fqc1=f"{qc2_dir}/{{sample}}_1_fastqc.html",
-        trim_fqc2=f"{qc2_dir}/{{sample}}_2_fastqc.html"
+        trim_fqc1=f"{qc2_dir}/{{sample}}_1_trim_fastqc.html",
+        trim_fqc2=f"{qc2_dir}/{{sample}}_2_trim_fastqc.html"
     log:
         log1=f"{log_dir}/trim_fqc_{{sample}}_1.log",
         log2=f"{log_dir}/trim_fqc_{{sample}}_2.log"
