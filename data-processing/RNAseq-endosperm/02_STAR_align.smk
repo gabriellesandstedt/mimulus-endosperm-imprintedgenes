@@ -10,6 +10,8 @@
 # assign directories
 ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
 repeatmasker_dir = "/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker"
+STAR_genome_dir = "/scratch/gds44474/MIMULUS/ref_genome/STAR_genome"
+data_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/data"
 
 # assign genome files
 ref = "Mimulus_guttatus_var_IM62.mainGenome.fasta"
@@ -19,6 +21,12 @@ gff = "MguttatusvarIM62v3.1.primaryTrs.gff3"
 
 # assign samples:
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11","34_S9","53_S16","49_S29"]
+
+# define all output files to rule all
+rule all: 
+    input:
+        f"{repeatmasker_dir}/{masked_ref2}",
+        expand(f"{data_dir}/{sample}.bam", sample=samples)
 
 # define rule to mask repetitive elements in the genome
 rule repeatmasker:
@@ -49,7 +57,7 @@ rule create_star_index:
         masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}",
         gff = f"{ref_dir}/{gff}"
     output:
-        directory = directory(f"{repeatmasker_dir}/STARgenome")
+        directory = directory(f"{STAR_genome_dir}")
     shell:
         """
         ml STAR/2.7.10a-GCC-8.3.0
@@ -61,30 +69,17 @@ rule star_alignment:
     input:
         masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}",
         gff = f"{ref_dir}/{gff}",
-        R1=expand("{data_dir}/{{sample}}_R1.trim.fq.gz", sample=samples),
-        R2=expand("/scratch/gds44474/MIMULUS/rna_seq/Mopen/PE/trim/{sample}_R2.trim.fq.gz", sample=read_sample_list())
+        R1 = expand(f"{data_dir}/{{sample}}_R1.trim.fastq.gz", sample = samples),
+        R2 = expand(f"{data_dir}/{{sample}}_R2.trim.fastq.gz", sample = samples),
+        directory = directory(f"{STAR_genome_dir}")
+    params:
+        sample = "{sample}"
     output:
-        "/scratch/gds44474/MIMULUS/rna_seq/Mopen/PE/trim/alignment_IM62v3/{sample}.bam"
+        bam = f"{data_dir}/{sample}.bam"
     shell:
         """
         ml STAR/2.7.10a-GCC-8.3.0
-
-        genomeDir=/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker/STARgenome
-        mkdir -p $genomeDir
-
-        outDir=/scratch/gds44474/MIMULUS/rna_seq/Mopen/PE/trim/alignment_IM62v3
-        mkdir -p $outDir
-
-        list=/scratch/gds44474/MIMULUS/rna_seq/Mopen/PE/trim/Mopen_sample_PE_list_2023.txt
-
-        R1={input.R1}
-        R2={input.R2}
-        BAM=/scratch/gds44474/MIMULUS/rna_seq/Mopen/PE/trim/alignment_IM62v3/{wildcards.sample}.bam
-
-        FQid=$(basename $R1 | cut -d. -f1);
-        LB=IM62.v3
-
-        STAR --runThreadN 12 --genomeDir $genomeDir --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn $R1 $R2 --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix $outDir/$BAM --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:$FQid LB:$LB DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:$FQid
+        STAR --runThreadN 12 --genomeDir {input.directory} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.R1} {input.R2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {output.bam} --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{params.sample} LB:IM62.v3 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{params.sample}
         """
 
 
