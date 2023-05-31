@@ -7,7 +7,6 @@
 ################################################################################
 ################################################################################
 import os
-import pandas as pd
 from snakemake.io import expand
 
 # Define the paths to data files
