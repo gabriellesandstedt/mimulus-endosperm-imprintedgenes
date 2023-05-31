@@ -20,6 +20,7 @@ masked_ref2 = "Mimulus_guttatus_var_IM62.mainGenome.masked.fasta"
 # define all output files to rule all
 rule all:
     input:
+        f"{repeat_masker_dir}/{masked_ref2}.dict"
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam", sample = samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam", sample = samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam", sample = samples),
