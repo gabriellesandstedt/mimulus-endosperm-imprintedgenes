@@ -103,7 +103,7 @@ rule star_alignment_pass2:
         gff = f"{ref_dir}/{gff}",
         R1 = expand(f"{data_dir}/{{sample}}_R1.trim.fastq.gz", sample=samples),
         R2 = expand(f"{data_dir}/{{sample}}_R2.trim.fastq.gz", sample=samples),
-        sj_files = output.sj_files,
+        sj_files = f"{data_dir}/sj_files.txt",
         genome_dir = directory(STAR_genome_dir)
     params:
         sample = "{sample}"
