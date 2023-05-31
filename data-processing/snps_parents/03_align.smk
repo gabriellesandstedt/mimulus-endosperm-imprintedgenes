@@ -85,19 +85,7 @@ rule sort_bam:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
         samtools sort {input.bam} -o {output.sorted_bam}
+        samtools index {input.sorted_bam}
         echo -e "\\n["$(date)"]\\n bam file is sorted ..\\n"
         """
 
-# define rule to index bam file
-# Samtools v 1.16 : https://github.com/samtools/samtools
-rule index_bam:
-    input:
-        sorted_bam=f"{data_dir}/{{sample}}_sorted.bam"
-    output:
-        index_bam=f"{data_dir}/{{sample}}_sorted.bam.bai"
-    shell:
-        """
-        module load SAMtools/1.16.1-GCC-11.3.0
-        samtools index {input.sorted_bam}
-        echo -e "\\n["$(date)"]\\n bam file is indexed ..\\n"
-        """
