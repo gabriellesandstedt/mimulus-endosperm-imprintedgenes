@@ -1,5 +1,5 @@
 ################################################################################
-## Mask repetitive elements of reference genome, index for STAR alignment, and align
+## Mask repetitive elements of reference genome, index and align with STAR
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
