@@ -6,32 +6,33 @@
 ## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 03_filter_bams.smk
 ################################################################################
 ################################################################################
-import os
+import os 
 
 # assign directories
-star_pass2_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
-repeat_masker_dir="/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker"
+star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
+repeat_masker_dir = "/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker"
 
 # assign samples
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
+
 # assign reference genome
 masked_ref2 = "Mimulus_guttatus_var_IM62.mainGenome.masked.fasta"
 
 # define all output files to rule all
 rule all:
     input:
-        f"{repeat_masker_dir}/{masked_ref2}.dict"
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam", sample = samples),
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam", sample = samples),
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam", sample = samples),
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam", sample = samples)
+        f"{repeat_masker_dir}/{masked_ref2}.dict",
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam", sample=samples),
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam", sample=samples),
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam", sample=samples),
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam", sample=samples)
 
-# create index file for reference genome 
+# create index file for reference genome
 rule index_reference:
     input:
-        masked_ref2 = f"{repeat_masker_dir}/{masked_ref2}"
+        masked_ref2=f"{repeat_masker_dir}/{masked_ref2}"
     output:
-        ref_index = f"{repeat_masker_dir}/{masked_ref2}.dict"
+        ref_index=f"{repeat_masker_dir}/{masked_ref2}.dict"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
