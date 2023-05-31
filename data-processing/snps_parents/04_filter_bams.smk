@@ -28,6 +28,7 @@ rule all:
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam.bai", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP.bam.bai", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam.bai", sample=samples)
 
@@ -165,6 +166,20 @@ rule proper_pair:
         samtools view -b -f 2 -F 2048 {input.FM_bam} > {output.PP_bam}
         """
 
+# define rule to index bam files
+# samtools v 1.16: https://github.com/samtools/samtools
+rule index_PP_bam:
+    input:
+        PP_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam"
+    output:
+        PP_bai=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam.bai"
+    shell:
+        """
+        module load SAMtools/1.16.1-GCC-11.3.0
+        echo -e "\\n["$(date)"]\\n Index BAM file...\\n"
+        samtools index {input.PP_bam} {output.PP_bai}
+        """       
+
 # define rule to sort bam files by coordinates
 # samtools v 1.16: https://github.com/samtools/samtools
 rule coord_sort:
@@ -181,7 +196,7 @@ rule coord_sort:
 
 # define rule to index bam file
 # samtools v 1.16: https://github.com/samtools/samtools
-rule index_pp_bam:
+rule index_CS_bam:
     input:
         CS_bam=f"{data_dir}/{{sample}}_RG_MD_FM_PP_CS.bam"
     output:
