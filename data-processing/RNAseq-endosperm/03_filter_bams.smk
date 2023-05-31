@@ -24,7 +24,6 @@ rule all:
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam", sample = samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam", sample = samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam", sample = samples)
-        
 
 # create index file for reference genome 
 rule index_reference:
@@ -39,6 +38,7 @@ rule index_reference:
             -R {input.masked_ref2} \
             -O {output.ref_index}
         """
+        
 # define rule to remove secondary alignments (-F 524) and sort bam files 
 # samtools v 1.16: https://github.com/samtools/samtools
 rule sort_and_index_bam:
