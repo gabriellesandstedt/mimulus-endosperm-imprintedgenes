@@ -25,8 +25,7 @@ rule all:
         expand(f"{ref_dir}/{ref}.{{suffix}}", suffix=["bwt", "amb", "ann", "pac"], strict=False),
         expand(f"{data_dir}/{{sample}}.sam", sample=samples),
         expand(f"{data_dir}/{{sample}}.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_sorted.bam", sample=samples) sample=samples),
-        expand(f"{data_dir}/{{sample}}_sorted.bam.bai", sample=samples)
+        expand(f"{data_dir}/{{sample}}_sorted.bam", sample=samples) sample=samples)
 
 # define rule to index reference genome using bwa index
 # BWA v 0.7.17 : https://bio-bwa.sourceforge.net
