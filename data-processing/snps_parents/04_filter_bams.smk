@@ -217,5 +217,5 @@ rule assess_quality:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\ run samtools flagstat on final bam file...\\n"
-        samtools flagstat {input.CS_bai}
+        samtools flagstat {input.CS_bam}
         """
