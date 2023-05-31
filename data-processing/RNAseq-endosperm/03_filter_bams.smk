@@ -25,6 +25,20 @@ rule all:
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam", sample = samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam", sample = samples)
         
+
+# create index file for reference genome 
+rule index_reference:
+    input:
+        masked_ref2 = f"{repeat_masker_dir}/{masked_ref2}"
+    output:
+        ref_index = f"{repeat_masker_dir}/{masked_ref2}.dict"
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        gatk CreateSequenceDictionary \
+            -R {input.masked_ref2} \
+            -O {output.ref_index}
+        """
 # define rule to remove secondary alignments (-F 524) and sort bam files 
 # samtools v 1.16: https://github.com/samtools/samtools
 rule sort_and_index_bam:
