@@ -7,8 +7,6 @@
 ################################################################################
 ################################################################################
 import os
-import pandas as pd
-from snakemake.io import directory
 from snakemake.io import expand
 
 # Define the paths to data files
@@ -51,10 +49,10 @@ rule hap_caller:
         bam = f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
-        gvcf = f"{data_dir}/{{sample}}.g.vcf"
+        gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
     shell:
         """
-        module load gatk/4.1
+        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
         gatk HaplotypeCaller \
             -I {input.bam} \
             -O {output.gvcf} \
@@ -63,60 +61,78 @@ rule hap_caller:
             -ERC GVCF
         """
 
-# define rule to combine gvcfs of all samples in a database
-rule combine_gvcfs:
+# define rule to combine tilingii gvcfs 
+rule combine_gvcfs_til:
     input:
-        gvcf=expand(f"{data_dir}/{{sample}}.g.vcf"),
-        interval_list=f"{data_dir}/{interval_list}",
+        SOP12_gvcf = f"{data_dir}/SRR12424410.g.vcf.gz",
+        LVR1_gvcf = f"{data_dir}/SRR3103524.g.vcf.gz",
+        interval_list = f"{data_dir}/{interval_list}"
     output:
-        database=directory("/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_allsamples")
+        til_gvcf = f"{data_dir}/til.g.vcf.gz"
     shell:
         """
-        module load gatk/4.1
-        gatk GenomicsDBImport \
-            --genomicsdb-workspace-path {output.database} \
-            --batch-size 158 \
-            --reader-threads 6 \
-            --sample-name-map {input.map_allsamples} \
-            --intervals {input.interval_list}
+        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        gatk CombineGVCFs \
+            -R reference.fasta \
+            --variant {input.SOP12_gvcf} \
+            --variant {input.LVR1_gvcf} \
+            -L {input.interval_list} \
+            -O {output.til_gvcf}
         """
-# define rule to combine gvcfs for retro samples used in the genetic matrix in a database
-rule genomicsdb_import_matrix:
+               
+# define rule to combine caespitosa gvcfs 
+rule combine_gvcfs_caes:
     input:
-        gvcf=expand(f"{data_dir}/{{sample}}.g.vcf", sample=df2['Sample']),
-        interval_list=f"{data_dir}/{interval_list}",
-        map_matrix=f"{data_dir}/{sample_map2}"
+        UTC1_gvcf = f"{data_dir}/SRR12424419.g.vcf.gz",
+        TWN36_gvcf = f"{data_dir}/SRR12424421.g.vcf.gz",
+        interval_list = f"{data_dir}/{interval_list}"
     output:
-        database=directory("/scratch/general/nfs1/u6048240/BOECHERA/GBS_May23/scripts/DB_matrix")
+        caes_gvcf = f"{data_dir}/caes.g.vcf.gz"
     shell:
         """
-        module load gatk/4.1
-        gatk GenomicsDBImport \
-            --genomicsdb-workspace-path {output.database} \
-            --batch-size 41 \
-            --reader-threads 6 \
-            --sample-name-map {input.map_matrix} \
-            --intervals {input.interval_list}
-        """
-
-# define rule to joint genotype for all samples at all sites
-rule joint_genotype_allsamples:
+        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        gatk CombineGVCFs \
+            -R reference.fasta \
+            --variant {input.UTC1_gvcf} \
+            --variant {input.TWN36_gvcf} \
+            -L {input.interval_list} \
+            -O {output.caes_gvcf}
+        """         
+               
+# define rule to joint genotype for tilingii samples 
+rule joint_genotype_til:
     input:
         ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}"
+        til_gvcf=f"{data_dir}/til.g.vcf.gz"
     output:
-        boech_output=f"{data_dir}/boechera_gbs_allsamples.vcf"
-    params:
-        genomicsdb="gendb://DB_allsamples"
-
+        til_vcf=f"{data_dir}/til.vcf.gz"
     shell:
         """
-        module load gatk/4.1
+        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
         gatk GenotypeGVCFs \
             -R {input.ref} \
-            -V {params.genomicsdb} \
+            -V {input.til_gvcf} \
             -L {input.intervals} \
             --allow-old-rms-mapping-quality-annotation-data \
-            --all-sites \
-            -O {output.boech_output}
+            -O {output.til_vcf}
+        """
+           
+# define rule to joint genotype for caespitosa samples 
+rule joint_genotype_caes:
+    input:
+        ref=f"{ref_dir}/{ref}",
+        intervals=f"{data_dir}/{interval_list}"
+        caes_gvcf=f"{data_dir}/caes.g.vcf.gz"
+    output:
+        caes_vcf=f"{data_dir}/caes.vcf.gz"
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        gatk GenotypeGVCFs \
+            -R {input.ref} \
+            -V {input.caes_gvcf} \
+            -L {input.intervals} \
+            --allow-old-rms-mapping-quality-annotation-data \
+            -O {output.caes_vcf}
         """
