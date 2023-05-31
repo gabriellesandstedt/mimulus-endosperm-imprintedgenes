@@ -31,6 +31,7 @@ rule all:
         expand(f"{data_dir}/{{sample}}.bam", sample=samples)
 
 # define rule to mask repetitive elements in the genome
+# repeat maskeer v 4.1.2 : https://www.repeatmasker.org
 rule repeatmasker:
     input:
         ref_genome = f"{ref_dir}/{ref}"
@@ -42,7 +43,7 @@ rule repeatmasker:
         RepeatMasker {input.ref_genome} -species Erythranthe -dir {output.repmask_dir}
         """
 
-# define rule to rename the masked genome
+# define rule to rename the masked genome ; this help with downstream analyses
 rule rename_masked_fasta:
     input:
         masked_fa = f"{repeatmasker_dir}/{masked_ref}"
@@ -54,6 +55,7 @@ rule rename_masked_fasta:
         """
 
 # define rule to index the masked genome for STAR alignment
+# STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
 rule create_star_index:
     input:
         masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}",
@@ -67,6 +69,7 @@ rule create_star_index:
         """
 
 # define rule to align fastqs to masked reference genome
+# STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
 rule star_alignment_pass1:
     input:
         masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}",
@@ -97,6 +100,7 @@ rule find_sj_files:
 
 # define rule to align fastqs to masked reference genome using SJ.out.tab files, which contain info on split junctions 
 # this is a second pass at the STAR alignment to improve alignment quality 
+# STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
 rule star_alignment_pass2:
     input:
         masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}",
