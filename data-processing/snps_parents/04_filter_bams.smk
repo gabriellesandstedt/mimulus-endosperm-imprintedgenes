@@ -24,7 +24,9 @@ rule all:
         expand(f"{data_dir}/{{sample}}_RG_MD.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD.bam.bai", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_NS.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_NS.bam.bai", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam.bai", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam.bai", sample=samples)
@@ -81,7 +83,7 @@ rule mark_duplicates:
 
 # define rule to index bam files
 # samtools v 1.16: https://github.com/samtools/samtools
-rule index_bam:
+rule index_MD_bam:
     input:
         MD_bam=f"{data_dir}/{{sample}}_RG_MD.bam"
     output:
@@ -107,6 +109,20 @@ rule namesort:
         samtools sort -o {output.NS_bam} -n {input.MD_bam}
         """
 
+# define rule to index bam files
+# samtools v 1.16: https://github.com/samtools/samtools
+rule index_NS_bam:
+    input:
+        NS_bam=f"{data_dir}/{{sample}}_RG_MD_NS.bam"
+    output:
+        NS_bai=f"{data_dir}/{{sample}}_RG_MD_NS.bam.bai"
+    shell:
+        """
+        module load SAMtools/1.16.1-GCC-11.3.0
+        echo -e "\\n["$(date)"]\\n Index BAM file...\\n"
+        samtools index {input.NS_bam} {output.NS_bai}
+        """
+
 # define rule to correct or adjust fixmate information of bam files
 # samtools v 1.16: https://github.com/samtools/samtools
 rule fixmate:
@@ -121,6 +137,20 @@ rule fixmate:
         samtools fixmate -r {input.NS_bam} {output.FM_bam}
         """
 
+# define rule to index bam files
+# samtools v 1.16: https://github.com/samtools/samtools
+rule index_FM_bam:
+    input:
+        FM_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam"
+    output:
+        FM_bai=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam.bai"
+    shell:
+        """
+        module load SAMtools/1.16.1-GCC-11.3.0
+        echo -e "\\n["$(date)"]\\n Index BAM file...\\n"
+        samtools index {input.FM_bam} {output.FM_bai}
+        """
+        
 # define rule to ensure that paired end reads map together
 # samtools v 1.16: https://github.com/samtools/samtools
 rule proper_pair:
