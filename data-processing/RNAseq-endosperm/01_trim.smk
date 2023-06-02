@@ -32,6 +32,7 @@ rule all:
         expand(f"{qc2_dir}/{{sample}}_R2_trim_fastqc.html", sample=samples)
 
 # define rule to combine raw fastqs across lanes
+# L = sequencing lane , R = read
 rule combine_fastq:
     input:
         r1L1=f"{raw_dir}/{{sample}}_L001_R1_001.fastq.gz",
