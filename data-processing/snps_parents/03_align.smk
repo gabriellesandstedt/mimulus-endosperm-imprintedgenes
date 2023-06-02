@@ -70,7 +70,7 @@ rule sam_bam_q29:
         """
         module load samtools/1.16
         samtools view -q 29 -b {input.sam} > {output.bam}
-        echo -e "\\n["$(date)"]\\n run sam2bamQ29..\\n"
+        echo -e "\\n["$(date)"]\\n reads with map quality <29 are removed..\\n"
         """
 
 # define rule to sort bam file
