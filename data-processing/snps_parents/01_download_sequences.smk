@@ -12,10 +12,10 @@ import os
 data_dir = "/scratch/gds44474/MIMULUS/snps_parents/data"
 
 # assign samples to be downloaded from NCBI
-# "SRR12424410" = SOP12
-# "SRR3103524" = LVR1
-# "SRR12424419" = UTC1
-# "SRR12424421" = TWN36
+# "SRR12424410" = SOP12, til
+# "SRR3103524" = LVR1, til
+# "SRR12424419" = UTC1, caes
+# "SRR12424421" = TWN36, caes 
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 
 # define all output files
