@@ -24,7 +24,7 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 rule all:
     input:
         expand(f"{ref_dir}/{ref}.dict"),
-        expand(f"{data_dir}/{{sample}}.g.vcf", sample=samples,
+        expand(f"{data_dir}/{{sample}}.g.vcf", sample=samples),
         expand(f"{data_dir}/tilingii.vcf"),
         expand(f"{data_dir}/caes.vcf")
 
