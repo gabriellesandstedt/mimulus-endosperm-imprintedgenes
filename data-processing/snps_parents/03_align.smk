@@ -49,7 +49,7 @@ rule bwa_index:
 rule bwa_mem:
     input:
         ref = f"{ref_dir}/{ref}",
-        trim_fq = f"{data_dir}/{{sample}}_trim.fastq.gz"
+        trim_fq = f"{data_dir}/{{sample}}_trim.fq.gz"
     output:
         sam = f"{data_dir}/{{sample}}.sam"
     shell:
