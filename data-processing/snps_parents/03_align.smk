@@ -49,14 +49,15 @@ rule bwa_index:
 rule bwa_mem:
     input:
         ref = f"{ref_dir}/{ref}",
-        trim_fq = f"{data_dir}/{{sample}}_trim.fq.gz"
+        trim_fq_r1 = f"{data_dir}/{{sample}}_1_trim.fq.gz",
+        trim_fq_r2 = f"{data_dir}/{{sample}}_2_trim.fq.gz"
     output:
         sam = f"{data_dir}/{{sample}}.sam"
     shell:
         """
         module load BWA/0.7.17-GCC-10.3.0
         echo -e "\\n["$(date)"]\\n run BWA mem..\\n"
-        bwa mem {input.ref} {input.trim_fq} > {output.sam}
+        bwa mem {input.ref} {input.trim_fq_r1} {input.trim_fq_r2} > {output.sam}
         """
 
 # define rule to convert raw alignments to bam files and removing reads < map quality 29
