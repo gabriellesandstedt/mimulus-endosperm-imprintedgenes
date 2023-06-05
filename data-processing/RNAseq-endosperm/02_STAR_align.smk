@@ -86,17 +86,6 @@ rule star_alignment_pass1:
         STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:IM62.v3 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
         """
 
-# define rule to find SJ.out.tab files
-rule find_sj_files:
-    input:
-        data_dir = data_dir
-    output:
-        sj_files = temp("{data_dir}/SJ.out.tab.txt")
-    shell:
-        """
-        find {input.data_dir} -name "*SJ.out.tab" | tr '\n' ' ' > {output.sj_files}
-        """
-
 # define rule to align fastqs to masked reference genome using SJ.out.tab files, which contain info on split junctions 
 # this is a second pass at the STAR alignment to improve alignment quality 
 # STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
