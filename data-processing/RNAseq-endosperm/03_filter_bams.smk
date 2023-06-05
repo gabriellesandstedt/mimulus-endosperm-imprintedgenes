@@ -47,7 +47,7 @@ rule sort_and_index_bam:
     input:
         bam=f"{star_pass2_dir}/{{sample}}.bamAligned.sortedByCoord.out.bam"
     output:
-        out_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam"
+        out_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam",
         star_pass2_dir=star_pass2_dir
 
     shell:
@@ -75,7 +75,7 @@ rule mark_duplicates:
 # GATK v 4.4: https://gatk.broadinstitute.org/hc/en-us
 rule split_trim_reads:
     input:
-        MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam"
+        MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam",
         masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}"
     output:
         split_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam"
