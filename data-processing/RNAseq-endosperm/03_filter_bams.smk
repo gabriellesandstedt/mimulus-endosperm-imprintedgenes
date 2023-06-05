@@ -30,7 +30,7 @@ rule all:
 # create index file for reference genome
 rule index_reference:
     input:
-        masked_ref2=f"{repeat_masker_dir}/{masked_ref2}"
+        masked_fa2=f"{repeat_masker_dir}/{masked_ref2}"
     output:
         ref_index=f"{repeat_masker_dir}/{masked_ref2}.dict"
     shell:
