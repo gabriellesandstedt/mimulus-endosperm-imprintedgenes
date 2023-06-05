@@ -37,7 +37,7 @@ rule index_reference:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
         gatk CreateSequenceDictionary \
-            -R {input.masked_ref2} \
+            -R {input.masked_fa2} \
             -O {output.ref_index}
         """
         
@@ -76,7 +76,7 @@ rule mark_duplicates:
 rule split_trim_reads:
     input:
         MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam",
-        masked_fa2 = f"{repeatmasker_dir}/{masked_ref2}"
+        masked_fa2 = f"{repeat_masker_dir}/{masked_ref2}"
     output:
         split_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split.bam"
     shell:
@@ -102,8 +102,8 @@ rule filter_unique_reads:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule flagstat_quality_check:
     input:
-        filtered_bam=f"{star_pass2_dir}/{{sample}}.STAR.IM62_v3.DupMark.Split.Q60.bam"
+        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam"
     shell:
         """
-        samtools flagstat {input.bam}
+        samtools flagstat {input.filtered_bam}
         """
