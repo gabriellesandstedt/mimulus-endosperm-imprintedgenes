@@ -69,7 +69,7 @@ rule sam_bam_q29:
         bam = f"{data_dir}/{{sample}}.bam"
     shell:
         """
-        module load samtools/1.16
+        module load SAMtools/1.16.1-GCC-11.3.0
         samtools view -q 29 -b {input.sam} > {output.bam}
         echo -e "\\n["$(date)"]\\n reads with map quality <29 are removed..\\n"
         """
