@@ -85,7 +85,7 @@ rule sort_bam:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
         samtools sort {input.bam} -o {output.sorted_bam}
-        samtools index {input.sorted_bam}
+        samtools index {output.sorted_bam}
         echo -e "\\n["$(date)"]\\n bam file is sorted ..\\n"
         """
 
