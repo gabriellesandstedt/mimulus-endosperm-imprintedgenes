@@ -86,9 +86,9 @@ rule fastqc_trimmed:
         module load FastQC/0.12.1-Java-11
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq1} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.trim_fq1} &> {log.log1}
-        echo -e "\\n["$(date)"]\\n FastQC round 2 finished ...\\n"
+        echo -e "\\n["$(date)"]\\n FastQC round 2, read 1 finished ...\\n"
 
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.trim_fq2} ...\\n"
         fastqc -o {qc2_dir} --noextract {input.trim_fq2} &> {log.log2}
-        echo -e "\\n["$(date)"]\\n FastQC round 2 finished ...\\n"
+        echo -e "\\n["$(date)"]\\n FastQC round 2, read 2 finished ...\\n"
         """
