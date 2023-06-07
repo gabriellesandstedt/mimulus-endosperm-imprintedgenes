@@ -94,6 +94,7 @@ rule filter_unique_reads:
         filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam"
     shell:
         """
+        module load SAMtools/1.16.1-GCC-11.3.0
         samtools view -hu -q 60 {input.split_bam} | samtools sort -O bam -o {output.filtered_bam} -T {output.filtered_bam}.tmp -
         samtools index {output.filtered_bam}
         """
@@ -105,5 +106,6 @@ rule flagstat_quality_check:
         filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam"
     shell:
         """
+        module load SAMtools/1.16.1-GCC-11.3.0
         samtools flagstat {input.filtered_bam}
         """
