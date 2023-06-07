@@ -25,6 +25,7 @@ rule all:
         expand(f"{data_dir}/{{sample}}_2.fastq.gz", sample=samples)
 
 # define rule to download fastqs from NCBI
+# https://www.ncbi.nlm.nih.gov/sra
 rule download_fastq:
     output:
         fq1=f"{data_dir}/{{sample}}_1.fastq.gz",
