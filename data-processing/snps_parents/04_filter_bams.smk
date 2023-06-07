@@ -46,7 +46,7 @@ rule add_or_replace_read_groups:
             RGPL=illumina \
             RGPU=unit_{wildcards.sample} \
             RGSM={wildcards.sample}   
-        samtools index {input.RG_bam}
+        samtools index {output.RG_bam}
         """
 
 # define rule to mark and remove duplicates 
@@ -64,7 +64,7 @@ rule mark_duplicates:
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n mark and remove duplicates..\\n"
         java -jar $EBROOTPICARD/picard.jar MarkDuplicates I={input.RG_bam} O={output.MD_bam} REMOVE_DUPLICATES=TRUE M={output.MD_log}
-        samtools index {input.MD_bam}
+        samtools index {output.MD_bam}
         """
 
 # define rule to sort bam files by name
@@ -79,7 +79,7 @@ rule namesort:
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n sort bam by name...\\n"
         samtools sort -o {output.NS_bam} -n {input.MD_bam}
-        samtools index {input.NS_bam} 
+        samtools index {output.NS_bam} 
         """
         
 # define rule to correct or adjust fixmate information of bam files
@@ -94,7 +94,7 @@ rule fixmate:
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n run samtools fixmate...\\n"
         samtools fixmate -r {input.NS_bam} {output.FM_bam}
-        samtools index {input.FM_bam}
+        samtools index {output.FM_bam}
         """
         
 # define rule to ensure that paired end reads map together
@@ -109,7 +109,7 @@ rule proper_pair:
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n ensure proper pairing...\\n"
         samtools view -b -f 2 -F 2048 {input.FM_bam} > {output.PP_bam}
-        samtools index {input.PP_bam}
+        samtools index {output.PP_bam}
         """    
 
 # define rule to sort bam files by coordinates
@@ -124,7 +124,7 @@ rule coord_sort:
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n sort bam by coordinate...\\n"
         samtools sort -o {output.CS_bam} {input.PP_bam}
-        samtools index {input.CS_bam}
+        samtools index {output.CS_bam}
         """
 
 # define rule that details bam files
