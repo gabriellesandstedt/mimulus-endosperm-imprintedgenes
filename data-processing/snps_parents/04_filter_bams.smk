@@ -18,11 +18,6 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 # assign all output files to rule all
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_RG.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_NS.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam", sample=samples),
 
 # define rule to add or replace read groups
