@@ -18,7 +18,12 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 # assign all output files to rule all
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam", sample=samples)
 
 # define rule to add or replace read groups
 # picard v. 2.27: https://broadinstitute.github.io/picard/
@@ -49,7 +54,7 @@ rule add_or_replace_read_groups:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule mark_duplicates:
     input:
-        RG_bam=f"{data_dir}/{{sample}}_sorted_RG.bam"
+        RG_bam=f"{data_dir}/{{sample}}_RG.bam"
     output:
         MD_bam=f"{data_dir}/{{sample}}_RG_MD.bam",
         MD_log=f"{data_dir}/{{sample}}_RG_MDlog.txt"
