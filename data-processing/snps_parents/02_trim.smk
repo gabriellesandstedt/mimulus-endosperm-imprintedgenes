@@ -45,11 +45,11 @@ rule fastqc_raw:
         module load FastQC/0.12.1-Java-11
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.fq1} ...\\n"
         fastqc -o {qc1_dir} --noextract {input.fq1} &> {log.log1}
-        echo -e "\\n["$(date)"]\\n FastQC round 1 finished ...\\n"
+        echo -e "\\n["$(date)"]\\n FastQC round 1, read 1 finished ...\\n"
 
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.fq2} ...\\n"
         fastqc -o {qc1_dir} --noextract {input.fq2} &> {log.log2}
-        echo -e "\\n["$(date)"]\\n FastQC round 1 finished ...\\n"
+        echo -e "\\n["$(date)"]\\n FastQC round 1, read 2 finished ...\\n"
         """
 # define rule to trim adapter sequences and filter raw fastq reads using trimmomatic
 # trimmomatic v 0.39: http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf
