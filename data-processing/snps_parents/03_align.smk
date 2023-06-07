@@ -80,7 +80,8 @@ rule sort_bam:
     input:
         bam = f"{data_dir}/{{sample}}.bam"
     output:
-        sorted_bam = f"{data_dir}/{{sample}}_sorted.bam"
+        sorted_bam = f"{data_dir}/{{sample}}_sorted.bam",
+        index_sorted=f"{data_dir}/{{sample}}_sorted.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
