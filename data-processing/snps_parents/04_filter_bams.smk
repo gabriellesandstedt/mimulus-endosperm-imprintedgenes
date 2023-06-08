@@ -20,10 +20,11 @@ rule all:
     input:
         expand(f"{data_dir}/{{sample}}_RG.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam", sample=samples)
+        expand(f"{data_dir}/{{sample}}_RG_MD_CS.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_CS_NS.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP_CS.bam", sample=samples)
 
 # define rule to add or replace read groups
 # picard v. 2.27: https://broadinstitute.github.io/picard/
@@ -32,7 +33,8 @@ rule add_or_replace_read_groups:
     input:
         bam=f"{data_dir}/{{sample}}_sorted.bam"
     output:
-        RG_bam=f"{data_dir}/{{sample}}_RG.bam"
+        RG_bam=f"{data_dir}/{{sample}}_RG.bam",
+        RG_bai=f"{data_dir}/{{sample}}_RG.bam.bai"
     shell:
         """
         module load picard/2.27.4-Java-13.0.2
@@ -57,7 +59,8 @@ rule mark_duplicates:
         RG_bam=f"{data_dir}/{{sample}}_RG.bam"
     output:
         MD_bam=f"{data_dir}/{{sample}}_RG_MD.bam",
-        MD_log=f"{data_dir}/{{sample}}_RG_MDlog.txt"
+        MD_log=f"{data_dir}/{{sample}}_RG_MDlog.txt",
+        MD_bai=f"{data_dir}/{{sample}}_RG_MD.bam.bai"
     shell:
         """
         module load picard/2.27.4-Java-13.0.2
@@ -66,19 +69,34 @@ rule mark_duplicates:
         java -jar $EBROOTPICARD/picard.jar MarkDuplicates I={input.RG_bam} O={output.MD_bam} REMOVE_DUPLICATES=TRUE M={output.MD_log}
         samtools index {output.MD_bam}
         """
+        
+rule coord_sort1:
+    input:
+        MD_bam=f"{data_dir}/{{sample}}_RG_MD.bam"
+    output:
+        CS1_bam=f"{data_dir}/{{sample}}_RG_MD_CS.bam",
+        CS1_bai=f"{data_dir}/{{sample}}_RG_MD_CS.bam.bai"
+    shell:
+        """
+        module load SAMtools/1.16.1-GCC-11.3.0
+        echo -e "\\n["$(date)"]\\n sort bam by coordinate...\\n"
+        samtools sort -o {output.CS1_bam} {input.MD_bam}
+        samtools index {output.CS1_bam}
+        """
 
 # define rule to sort bam files by name
 # samtools v 1.16: https://github.com/samtools/samtools
 rule namesort:
     input:
-        MD_bam=f"{data_dir}/{{sample}}_RG_MD.bam"
+        CS1_bam=f"{data_dir}/{{sample}}_RG_MD_CS.bam"
     output:
-        NS_bam=f"{data_dir}/{{sample}}_RG_MD_NS.bam"
+        NS_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS.bam",
+        NS_bai=f"{data_dir}/{{sample}}_RG_MD_CS_NS.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n sort bam by name...\\n"
-        samtools sort -o {output.NS_bam} -n {input.MD_bam}
+        samtools sort -o {output.NS_bam} -n {input.CS1_bam}
         samtools index {output.NS_bam} 
         """
         
@@ -86,9 +104,10 @@ rule namesort:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule fixmate:
     input:
-        NS_bam=f"{data_dir}/{{sample}}_RG_MD_NS.bam"
+        NS_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS.bam"
     output:
-        FM_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam"
+        FM_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM.bam",
+        FM_bai=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -101,9 +120,10 @@ rule fixmate:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule proper_pair:
     input:
-        FM_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam"
+        FM_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM.bam"
     output:
-        PP_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam"
+        PP_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP.bam",
+        PP_bai=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -116,9 +136,10 @@ rule proper_pair:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule coord_sort:
     input:
-        PP_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam"
+        PP_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP.bam"
     output:
-        CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
+        CS_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP_CS.bam",
+        CS_bai=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP_CS.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -131,7 +152,7 @@ rule coord_sort:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule assess_quality:
     input:
-        CS_bam=f"{data_dir}/{{sample}}_RG_MD_FM_PP_CS.bam"
+        CS_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM_PP_CS.bam"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
