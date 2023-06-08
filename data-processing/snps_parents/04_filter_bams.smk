@@ -73,9 +73,9 @@ rule mark_duplicates:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule namesort:
     input:
-        MD_bam=f"{data_dir}/{{sample}}_RG_MD_CS.bam"
+        MD_bam=f"{data_dir}/{{sample}}_RG_MD.bam"
     output:
-        NS_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS.bam"
+        NS_bam=f"{data_dir}/{{sample}}_RG_MD_NS.bam"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -87,9 +87,9 @@ rule namesort:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule fixmate:
     input:
-        NS_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS.bam"
+        NS_bam=f"{data_dir}/{{sample}}_RG_MD_NS.bam"
     output:
-        FM_bam=f"{data_dir}/{{sample}}_RG_MD_CS_NS_FM.bam",
+        FM_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -103,7 +103,7 @@ rule proper_pair:
     input:
         FM_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam"
     output:
-        PP_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam",
+        PP_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
