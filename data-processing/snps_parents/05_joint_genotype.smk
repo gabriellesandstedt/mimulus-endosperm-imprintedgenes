@@ -46,7 +46,7 @@ rule index_reference:
 rule hap_caller:
     input:
         ref = f"{ref_dir}/{ref}",
-        bam = f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam",
+        CS_bam = f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
         gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
@@ -54,7 +54,7 @@ rule hap_caller:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
         gatk HaplotypeCaller \
-            -I {input.bam} \
+            -I {input.CS_bam} \
             -O {output.gvcf} \
             -R {input.ref} \
             -L {input.intervals} \
@@ -103,7 +103,7 @@ rule combine_gvcfs_caes:
 rule joint_genotype_til:
     input:
         ref=f"{ref_dir}/{ref}",
-        intervals=f"{data_dir}/{interval_list}"
+        intervals=f"{data_dir}/{interval_list}",
         til_gvcf=f"{data_dir}/til.g.vcf.gz"
     output:
         til_vcf=f"{data_dir}/til.vcf.gz"
@@ -122,7 +122,7 @@ rule joint_genotype_til:
 rule joint_genotype_caes:
     input:
         ref=f"{ref_dir}/{ref}",
-        intervals=f"{data_dir}/{interval_list}"
+        intervals=f"{data_dir}/{interval_list}",
         caes_gvcf=f"{data_dir}/caes.g.vcf.gz"
     output:
         caes_vcf=f"{data_dir}/caes.vcf.gz"
