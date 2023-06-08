@@ -16,7 +16,7 @@ ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
 # reference genome: Mimulus IM62 v3
 ref = "Mimulus_guttatus_var_IM62.mainGenome.fasta"
 # define interval list with list of chromosomes
-interval_list = "interval.list"
+interval_list = "intervals.list"
 # assign samples
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 
@@ -24,9 +24,9 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 rule all:
     input:
         expand(f"{ref_dir}/{ref}.dict"),
-        expand(f"{data_dir}/{{sample}}.g.vcf", sample=samples),
-        expand(f"{data_dir}/tilingii.vcf"),
-        expand(f"{data_dir}/caes.vcf")
+        expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
+        expand(f"{data_dir}/til.vcf.gz"),
+        expand(f"{data_dir}/caes.vcf.gz")
 
 # define rule to index reference with GATK 
 rule index_reference:
@@ -46,7 +46,7 @@ rule index_reference:
 rule hap_caller:
     input:
         ref = f"{ref_dir}/{ref}",
-        CS_bam = f"{data_dir}/{{sample}}_RG_MD_NS_PP_CS.bam",
+        CS_bam = f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
         gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
