@@ -47,28 +47,27 @@ rule sort_and_index_bam:
     input:
         bam=f"{star_pass2_dir}/{{sample}}.bamAligned.sortedByCoord.out.bam"
     output:
-        out_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam",
-        star_pass2_dir=star_pass2_dir
-
+        sorted_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam",
+        sorted_bai=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
-        samtools view -hu -F 524 {input.bam} | samtools sort -O {output.star_pass2_dir} -o {output.bam} -T {output.out_bam}.tmp -
-        samtools index {output.bam}
+        samtools view -hu -F 524 {input.bam} | samtools sort -O {star_pass2_dir} -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
+        samtools index {output.sorted_bam}
         """
 
-# define rule to mark and remove duplicates
+# define rule to mark duplicates
 # picard v 2.27: https://broadinstitute.github.io/picard/
 rule mark_duplicates:
     input:
-        bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam"
+        sorted_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam"
     output:
         MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.bam",
         metrics_file=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD.txt"
     shell:
         """
         module load picard/2.27.4-Java-13.0.2
-        java -jar $EBROOTPICARD/picard.jar MarkDuplicates INPUT={input.bam} OUTPUT={output.MD_bam} METRICS_FILE={output.metrics_file} REMOVE_DUPLICATES=TRUE CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT ASSUME_SORT_ORDER=coordinate
+        java -jar $EBROOTPICARD/picard.jar MarkDuplicates INPUT={input.sorted_bam} OUTPUT={output.MD_bam} METRICS_FILE={output.metrics_file} REMOVE_DUPLICATES=FALSE CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT ASSUME_SORT_ORDER=coordinate
         """
 
 # define rule to trim intronic spanning reads and automatically transform default star mapq value for uniquely mapping reads of 225 to 60
