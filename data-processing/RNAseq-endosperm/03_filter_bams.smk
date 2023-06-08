@@ -45,14 +45,14 @@ rule index_reference:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule sort_and_index_bam:
     input:
-        bam=f"{star_pass2_dir}/{{sample}}.bamAligned.sortedByCoord.out.bam"
+        bam=f"{star_pass2_dir}/{{sample}}.Aligned.sortedByCoord.out.bam"
     output:
         sorted_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam",
         sorted_bai=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3.bam.bai"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
-        samtools view -hu -F 524 {input.bam} | samtools sort -O {star_pass2_dir} -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
+        samtools view -hu -F 524 {input.bam} | samtools sort -O bam -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
         samtools index {output.sorted_bam}
         """
 
