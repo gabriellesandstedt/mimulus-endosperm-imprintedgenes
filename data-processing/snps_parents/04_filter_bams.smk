@@ -128,20 +128,9 @@ rule coord_sort:
         samtools sort -o {output.CS_bam} {input.PP_bam}
         samtools index {output.CS_bam}
         """
-
-# define rule that details bam files
-# samtools v 1.16: https://github.com/samtools/samtools
-rule assess_quality:
-    input:
-        CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
-    shell:
-        """
-        module load SAMtools/1.16.1-GCC-11.3.0
-        echo -e "\\n["$(date)"]\\ run samtools flagstat on final bam file...\\n"
-        samtools flagstat {input.CS_bam}
-        """
         
-# define rule the quality control of alignment sequencing data
+# define rule to determine the quality control of alignment sequencing data
+# qualimap v 2.2.1: http://qualimap.conesalab.org
 rule qualimap:
     input:
         CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
@@ -150,7 +139,7 @@ rule qualimap:
     shell:
         """
         module load Qualimap/2.2.1-foss-2019b-R-3.6.2
-        qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} -outdir {data_dir}
+        qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} 
         """
 
 
