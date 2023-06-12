@@ -65,6 +65,7 @@ rule hap_caller:
 # define rule to combine tilingii gvcfs 
 rule combine_gvcfs_til:
     input:
+        ref = f"{ref_dir}/{ref}",
         SOP12_gvcf = f"{data_dir}/SRR12424410.g.vcf.gz",
         LVR1_gvcf = f"{data_dir}/SRR3103524.g.vcf.gz",
         interval_list = f"{data_dir}/{interval_list}"
@@ -74,7 +75,7 @@ rule combine_gvcfs_til:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
         gatk CombineGVCFs \
-            -R reference.fasta \
+            -R {input.ref} \
             --variant {input.SOP12_gvcf} \
             --variant {input.LVR1_gvcf} \
             -L {input.interval_list} \
@@ -84,6 +85,7 @@ rule combine_gvcfs_til:
 # define rule to combine caespitosa gvcfs 
 rule combine_gvcfs_caes:
     input:
+        ref = f"{ref_dir}/{ref}",
         UTC1_gvcf = f"{data_dir}/SRR12424419.g.vcf.gz",
         TWN36_gvcf = f"{data_dir}/SRR12424421.g.vcf.gz",
         interval_list = f"{data_dir}/{interval_list}"
@@ -93,7 +95,7 @@ rule combine_gvcfs_caes:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
         gatk CombineGVCFs \
-            -R reference.fasta \
+            -R {input.ref} \
             --variant {input.UTC1_gvcf} \
             --variant {input.TWN36_gvcf} \
             -L {input.interval_list} \
