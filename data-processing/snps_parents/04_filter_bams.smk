@@ -24,7 +24,8 @@ rule all:
         expand(f"{data_dir}/{{sample}}_RG_MD_NS.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam", sample=samples)
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam", sample=samples),
+        expand(f"{data_dir}/{{sample}}_bamQC.pdf", sample=samples)
 
 # define rule to add or replace read groups
 # picard v. 2.27: https://broadinstitute.github.io/picard/
@@ -139,3 +140,17 @@ rule assess_quality:
         echo -e "\\n["$(date)"]\\ run samtools flagstat on final bam file...\\n"
         samtools flagstat {input.CS_bam}
         """
+        
+# define rule the quality control of alignment sequencing data
+rule qualimap:
+    input:
+        CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
+    output:
+        quali_bam=f"{data_dir}/{{sample}}_bamQC.pdf"
+    shell:
+        """
+        module load Qualimap/2.2.1-foss-2019b-R-3.6.2
+        qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} -outdir {data_dir}
+        """
+
+
