@@ -24,7 +24,8 @@ rule all:
     input:
         expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam" , sample=samples),
         expand(f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt", sample=samples),
-        f"{star_pass2_dir}/combined_gene_counts.txt"
+        f"{star_pass2_dir}/merged_counts.txt",
+        f"{star_pass2_dir}/merged_gene_counts.txt" 
         
 rule name_sort_bam:
     input:
@@ -49,15 +50,24 @@ rule gene_counts:
         htseq-count --format bam --stranded no --type gene --idattr Name --nonunique none {input.ns_bam} {input.gff_file} > {output.gene_counts}
         """
         
-rule merge_columns:
+rule merge_gene_counts:
     input:
-        gene_counts=f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt"
+        gene_counts=expand(f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt", sample=samples)
     output:
-        "merged_counts.txt"
+        merged_counts=f"{star_pass2_dir}/merged_counts.txt"
     shell:
         """
-        echo "Column2 {input}" > {output}
-        paste -d'\t' {input} | cut -f2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38 >> {output}
+        echo "Column2 {input.gene_counts}" > {output.merged_counts}
+        paste -d'\t' {input.gene_counts} | cut -f2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38 >> {output.merged_counts}
         """
         
-
+rule merge_columns_again:
+    input:
+        gene_col=f"{star_pass2_dir}/15_S7_HTSeq_gene_counts.txt",
+        merged_counts=f"{star_pass2_dir}/merged_counts.txt"
+    output:
+        merged_counts_gene=f"{star_pass2_dir}/merged_gene_counts.txt" 
+    shell:
+        """
+        paste -d'\t' <(cut -f1 {input.gene_col}) {input.merged_counts} > {output.merged_counts_gene}
+        """
