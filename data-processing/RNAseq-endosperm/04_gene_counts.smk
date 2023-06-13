@@ -20,11 +20,17 @@ gff = "MguttatusvarIM62v3.1.primaryTrs.gff3"
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
 
 
+rule all:
+    input:
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam" , sample=samples),
+        expand(f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt", sample=samples),
+        f"{star_pass2_dir}/combined_gene_counts.txt"
+        
 rule name_sort_bam:
     input:
-        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam" 
+        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam"
     output:
-        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam" 
+        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -33,42 +39,25 @@ rule name_sort_bam:
         
 rule gene_counts:        
     input:
-        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam"
-        gff_file="{ref_dir}/{gff}"
+        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam",
+        gff_file=f"{ref_dir}/{gff}"
     output:
-        gene_counts="{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt"
+        gene_counts=f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt"
     shell:
         """
         module load HTSeq/0.13.5-foss-2019b-Python-3.7.4
         htseq-count --format bam --stranded no --type gene --idattr Name --nonunique none {input.ns_bam} {input.gff_file} > {output.gene_counts}
         """
-
-rule combine_gene_counts:
+        
+rule merge_columns:
     input:
-        gene_counts=f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt",
+        gene_counts=f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt"
     output:
-        combined_counts=f"{star_pass2_dir}/Mopen_IM62v3_HTSeq_gene_counts_combined.txt"
+        "merged_counts.txt"
     shell:
         """
-        for i in $countDir/*nameSorted.bam_HTSeq_gene_counts_2023-05-11.txt
-        do
-            geneList=$(basename $i | cut -d. -f1)
-            echo $geneList >> $countDir/Mopen_IM62v3_HTSeq_sampleNames_$Date.txt
-        done;
-
-        FILES=$(ls $countDir/*gene_counts*.txt | tr '\\n' ' ')
-        awk 'NF > 1
-        
-        
-                """
-        
-       
-        for i in $countDir/*nameSorted.bam_HTSeq_gene_counts_2023-05-11.txt
-        do
-            geneList=$(basename $i | cut -d. -f1)
-            echo $geneList >> $countDir/Mopen_IM62v3_HTSeq_sampleNames_$Date.txt
-        done;
-
-        FILES=$(ls $countDir/*gene_counts*.txt | tr '\\n' ' ')
-        awk 'NF > 1{ a[$1] = a[$1]"\t"$2} END {for( i in a ) print i a[i]}' $FILES | sort - > $countDir/Mopen_IM62v3_HTSeq_gene_counts_$Date\_sorted.txt
+        echo "Column2 {input}" > {output}
+        paste -d'\t' {input} | cut -f2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38 >> {output}
         """
+        
+
