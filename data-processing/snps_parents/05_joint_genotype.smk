@@ -26,8 +26,8 @@ rule all:
     input:
         expand(f"{ref_dir}/{ref}.dict"),
         expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
-        expand(f"{data_dir}/til.vcf.gz"),
-        expand(f"{data_dir}/caes.vcf.gz")
+        expand(f"{data_dir}/til.vcf"),
+        expand(f"{data_dir}/caes.vcf")
 
 # define rule to index reference with GATK 
 rule index_reference:
@@ -109,7 +109,7 @@ rule joint_genotype_til:
         intervals=f"{data_dir}/{interval_list}",
         til_gvcf=f"{data_dir}/til.g.vcf.gz"
     output:
-        til_vcf=f"{data_dir}/til.vcf.gz"
+        til_vcf=f"{data_dir}/til.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
@@ -128,7 +128,7 @@ rule joint_genotype_caes:
         intervals=f"{data_dir}/{interval_list}",
         caes_gvcf=f"{data_dir}/caes.g.vcf.gz"
     output:
-        caes_vcf=f"{data_dir}/caes.vcf.gz"
+        caes_vcf=f"{data_dir}/caes.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
