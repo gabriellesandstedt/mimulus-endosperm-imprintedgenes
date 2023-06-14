@@ -38,7 +38,7 @@ rule select_biallelic_snps_til:
             -O {output.biallelic_vcf}
         """
         
- # select biallelic SNPs in caes vcf 
+# select biallelic SNPs in caes vcf 
 rule select_biallelic_snps_caes:
     input:
         ref=f"{ref_dir}/{ref}",
@@ -56,47 +56,39 @@ rule select_biallelic_snps_caes:
             -O {output.biallelic_vcf}
         """       
   
- # assign rule to convert vcf to a table to determine quality filtering thresholds with R script
+ # assign rule to convert vcf to a table to assess quality filtering thresholds
  # problems with java compatability -- had to use different GATK version 
  rule variant_table_til:
     input:
         ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/til_biallelic_snps.vcf",
-        rscript=f"{scripts_dir}/filtering_diagnostics_til.R"
     output:
         table=f"{data_dir}/til_variant.table"
     shell:
         """
         module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
-        module load R/4.3.0-foss-2020b
         gatk VariantsToTable \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
             -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
             -O {output.table}
-        
-        R CMD BATCH {input.rscript}
         """
         
-   # assign rule to convert vcf to a table to determine quality filtering thresholds with R script
+# assign rule to convert vcf to a table to assess quality filtering thresholds
   rule variant_table_caes:
     input:
         ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf",
-        rscript=f"{scripts_dir}/filtering_diagnostics_caes.R"
     output:
         table=f"{data_dir}/caes_variant.table"
     shell:
         """
         module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
-        module load R/4.3.0-foss-2020b
         gatk VariantsToTable \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
             -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
             -O {output.table}
-        
-        R CMD BATCH {input.rscript}
         """       
         
 # assign rule to filter tilingii vcf 
@@ -108,7 +100,7 @@ rule filter_variants_til:
         filtered_vcf=f"{data_dir}/til_biallelic_snps_filter.vcf"
     shell:
         """
-        module load gatk/4.1
+        module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
@@ -126,7 +118,7 @@ rule filter_variants_caes:
         filtered_vcf=f"{data_dir}/caes_biallelic_snps_filter.vcf"
     shell:
         """
-        module load gatk/4.1
+        module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
@@ -146,7 +138,7 @@ rule extract_passed_variants_til:
         grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
         """
         
- # extract passed variants for caespitosa vcf 
+# extract passed variants for caespitosa vcf 
 rule extract_passed_variants_caes:
     input:
         filtered_vcf=f"{data_dir}/caes_biallelic_snps_filter.vcf"
@@ -158,30 +150,93 @@ rule extract_passed_variants_caes:
         """   
         
 # assign rule to remove heterozygous sites in tilingii vcf 
-rule extract_passed_variants_caes:
+rule rem_hets_til:
     input:
-        filtered_vcf=f"{data_dir}/caes_biallelic_snps_filter.vcf"
+        filtered_passed_vcf=f"{data_dir}/til_biallelic_snps_filterPASSED.vcf"
     output:
-        filtered_passed_vcf=f"{data_dir}/caes_biallelic_snps_filterPASSED.vcf"
+        nohet_vcf=f"{data_dir}/til_biallelic_snps_nohets.vcf"
     shell:
         """
-        grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
+        module load BCFtools/1.15.1-GCC-10.2.0
+        bcftools view -g ^het {input.filtered_passed_vcf} > {output.nohet_vcf}
         """  
-
-# assign rule to remove heterozygous sites in caespitosa
-rule extract_passed_variants_caes:
+        
+# assign rule to remove heterozygous sites in caespitosa vcf 
+rule rem_hets_caes:
     input:
-        filtered_vcf=f"{data_dir}/caes_biallelic_snps_filter.vcf"
-    output:
         filtered_passed_vcf=f"{data_dir}/caes_biallelic_snps_filterPASSED.vcf"
+    output:
+        nohet_vcf=f"{data_dir}/caes_biallelic_snps_nohets.vcf"
     shell:
         """
-        grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
+        module load BCFtools/1.15.1-GCC-10.2.0
+        bcftools view -g ^het {input.filtered_passed_vcf} > {output.nohet_vcf}
         """  
+        
 
-# assign rule to split vcfs to filter by individual max Depth
+# assign rule to split til vcf to filter by individual depth
+rule split_til_vcf:
+    input:
+        nohet_vcf=f"{data_dir}/til_biallelic_snps_nohets.vcf"
+    output:
+        SOP12_vcf=f"{data_dir}/SOP12_snps.vcf",
+        LVR1_vcf=f"{data_dir}/LVR1_snps.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-10.2.0
+        vcftools --remove-indv SRR12424410 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.LVR1_vcf}
+        vcftools --remove-indv SRR3103524 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.SOP12_vcf}
+        """
+        
 
-# assign rule to filter by depth 
+# assign rule to split caes vcf to filter by individual Depth
+rule split_caes_vcf:
+    input:
+        nohet_vcf=f"{data_dir}/caes_biallelic_snps_nohets.vcf"
+    output:
+        UTC1_vcf=f"{data_dir}/UTC1_snps.vcf",
+        TWN36_vcf=f"{data_dir}/TWN36_snps.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-10.2.0
+        vcftools --remove-indv SRR12424421 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.UTC1_vcf}
+        vcftools --remove-indv SRR12424419 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.TWN36_vcf}
+        """ 
+
+# assign rule to filter by depth of tilingii samples 
+# mean covg LVR1:  19.8721X ; SD: 307.4309x
+# mean covg SOP12: 4.9261X ; SD: 53.9951X
+rule split_caes_vcf:
+    input:
+        SOP12_vcf=f"{data_dir}/SOP12_snps.vcf.recode.vcf",
+        LVR1_vcf=f"{data_dir}/LVR1_snps.vcf.recode.vcf"
+    output:
+        SOP12_dp_vcf=f"{data_dir}/SOP12_snps.vcf.recode.vcf",
+        LVR1_dp_vcf=f"{data_dir}/LVR1_snps.vcf.recode.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-10.2.0
+        vcftools --vcf {input.SOP12_vcf} --maxDP 113 --recode --recode-INFO-all --out {output.SOP12_vcf}
+        vcftools --vcf {input.LVR1_vcf} --maxDP 635 --recode --recode-INFO-all --out {output.SOP12_vcf}
+        """ 
+        
+# assign rule to filter by depth of tilingii samples 
+# mean covg LVR1:  19.8721X ; SD: 307.4309x
+# mean covg SOP12: 4.9261X ; SD: 53.9951X
+rule split_caes_vcf:
+    input:
+        SOP12_vcf=f"{data_dir}/SOP12_snps.vcf.recode.vcf",
+        LVR1_vcf=f"{data_dir}/LVR1_snps.vcf.recode.vcf"
+    output:
+        SOP12_dp_vcf=f"{data_dir}/SOP12_snps.vcf.recode.vcf",
+        LVR1_dp_vcf=f"{data_dir}/LVR1_snps.vcf.recode.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-10.2.0
+        vcftools --vcf {input.SOP12_vcf} --maxDP 113 --recode --recode-INFO-all --out {output.SOP12_vcf}
+        vcftools --vcf {input.LVR1_vcf} --maxDP 635 --recode --recode-INFO-all --out {output.SOP12_vcf}
+        """ 
+       
 
 # assign rule to bgzip and index vcfs 
 
