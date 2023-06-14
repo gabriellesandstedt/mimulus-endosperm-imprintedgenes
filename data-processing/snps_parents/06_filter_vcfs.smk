@@ -56,17 +56,18 @@ rule select_biallelic_snps_caes:
             -O {output.biallelic_vcf}
         """       
   
-  # assign rule to convert vcf to a table to determine quality filtering thresholds with R script
-  rule variant_table_til:
+ # assign rule to convert vcf to a table to determine quality filtering thresholds with R script
+ # problems with java compatability -- had to use different GATK version 
+ rule variant_table_til:
     input:
-        ref=f"{ref_dir}/{ref_genome}",
+        ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/til_biallelic_snps.vcf",
         rscript=f"{scripts_dir}/filtering_diagnostics_til.R"
     output:
         table=f"{data_dir}/til_variant.table"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
         module load R/4.3.0-foss-2020b
         gatk VariantsToTable \
             -R {input.ref} \
@@ -80,14 +81,14 @@ rule select_biallelic_snps_caes:
    # assign rule to convert vcf to a table to determine quality filtering thresholds with R script
   rule variant_table_caes:
     input:
-        ref=f"{ref_dir}/{ref_genome}",
+        ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf",
         rscript=f"{scripts_dir}/filtering_diagnostics_caes.R"
     output:
         table=f"{data_dir}/caes_variant.table"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
         module load R/4.3.0-foss-2020b
         gatk VariantsToTable \
             -R {input.ref} \
@@ -101,7 +102,7 @@ rule select_biallelic_snps_caes:
 # assign rule to filter tilingii vcf 
 rule filter_variants_til:
     input:
-        ref=f"{ref_dir}/{ref_genome}",
+        ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/til_biallelic_snps.vcf"
     output:
         filtered_vcf=f"{data_dir}/til_biallelic_snps_filter.vcf"
@@ -119,7 +120,7 @@ rule filter_variants_til:
 # assign rule to filter caespitosa vcf 
 rule filter_variants_caes:
     input:
-        ref=f"{ref_dir}/{ref_genome}",
+        ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf"
     output:
         filtered_vcf=f"{data_dir}/caes_biallelic_snps_filter.vcf"
