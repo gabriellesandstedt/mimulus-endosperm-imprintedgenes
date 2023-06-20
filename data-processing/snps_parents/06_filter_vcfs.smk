@@ -5,6 +5,7 @@
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
 ## command to run snakemake script: snakemake --rerun-incomplete --latency-wait 60 --cores 4 -s 06_filter_vcfs.smk
+## I separated any filtering rules for tilingii and caespitosa, and merged some rules
 ################################################################################
 ################################################################################
 import os
@@ -249,7 +250,7 @@ rule filt_dp_caes:
         vcftools --vcf {input.TWN36_vcf} --maxDP 163  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
         """     
 
-# assign rule to bgzip and index vcfs 
+# assign rule to bgzip and index all vcfs 
 rule vcf_to_gzvcf:
     input:
         SOP12_dp_vcf=f"{data_dir}/SOP12_snps_dp.vcf.recode.vcf",
@@ -344,6 +345,17 @@ rule final_caes_vcf:
         """ 
 
 # assign rule to create final bed files 
-
-
+rule vcfs_to_bed:
+    input:
+        final_til_vcf=f"{data_dir}/til_snps_filtered_DP_mac.vcf.recode.vcf",
+        final_caes_vcf=f"{data_dir}/caes_snps_filtered_DP_mac.vcf.recode.vcf"
+    output:
+        final_til_bed=f"{data_dir}/til.bed",
+        final_caes_bed=f"{data_dir}/caes.bed"
+    shell:
+        """
+        module load BEDOPS/2.4.39-foss-2019b
+        vcf2bed < {input.final_til_vcf} > {output.final_til_bed}
+        vcf2bed < {input.final_caes_vcf} > {output.final_caes_bed}
+        """ 
         
