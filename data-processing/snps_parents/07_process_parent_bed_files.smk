@@ -15,6 +15,16 @@ ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
 # assign files 
 gff3= "MguttatusvarIM62v3.1.primaryTrs.gff3"
 
+
+# assign rule for all expected output files from this script 
+rule all:
+    input:
+        f"{data_dir}/genes.bed",
+        f"{data_dir}/final_caes.bed",
+        f"{data_dir}/final_til.bed",
+        f"caes_genes_no.txt",
+        f"til_genes_no.txt"
+        
 # assign rule to convert gff3 file to bed file 
 rule gff_to_bed:
     input:
