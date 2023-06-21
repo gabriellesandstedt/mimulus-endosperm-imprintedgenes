@@ -53,7 +53,7 @@ rule gff3_to_gtf:
     shell:
         """
         ml gffread/0.11.6-GCCcore-8.3.0
-        gffread {input.gff} -T -o {input.gtf}
+        gffread {input.gff} -T -o {output.gtf}
         """
 
 rule feature_counts:
