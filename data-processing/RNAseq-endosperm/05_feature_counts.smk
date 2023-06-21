@@ -12,45 +12,60 @@ import os
 # assign directories
 star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
 scripts_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/scripts"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
+ref_dir="/scratch/gds44474/MIMULUS/ref_genome"
 
-# assign files
+# assign gff
 gff = "MguttatusvarIM62v3.1.primaryTrs.gff3"
 
-samp_nos = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28"]
-samp_names = ["LVR1xSOP12_1", "LVR1xSOP12_2", "LVR1xSOP12_3", "SOP12xLVR1_1", "SOP12xLVR1_2", "SOP12xLVR1_3", "TWN36xUTC1_1", "TWN36xUTC1_2", "TWN36xUTC1_3", "UTC1xTWN36_1", "UTC1xTWN36_2", "UTC1xTWN36_3"]
+def get_output_filenames():
+    prefix_mapping = {
+        "13_S17": "LVR1xSOP12_1",
+        "41_S24": "LVR1xSOP12_2",
+        "50_S30": "LVR1xSOP12_3",
+        "15_S7": "SOP12xLVR1_1",
+        "39_S23": "SOP12xLVR1_2",
+        "46_S26": "SOP12xLVR1_3",
+        "35_S10": "TWN36xUTC1_1",
+        "52_S15": "TWN36xUTC1_2",
+        "45_S14": "TWN36xUTC1_3",
+        "31_S8": "UTC1xTWN36_1",
+        "33_S22": "UTC1xTWN36_2",
+        "48_S28": "UTC1xTWN36_3"
+    }
+    for prefix in ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28"]:
+        new_prefix = prefix_mapping[prefix]
+        yield f"{star_pass2_dir}/{new_prefix}_STAR_IM62_v3_MD_Split_Q60.bam"
 
-rule all:
-    input:
-        expand(f"{star_pass2_dir}/{{samp_no}}_STAR_IM62_v3_MD_Split_Q60_NS.bam", samp_no=samp_nos)
-        expand(f"{star_pass2_dir}/{{samp_name}}_STAR_IM62_v3_MD_Split_Q60_NS.bam", samp_name=samp_names)
-rule assign:
-    output:
-        samp_no=samp_nos
-    shell:
-        """
-        print {output}
-        """
 rule rename_files:
     input:
-        f"{star_pass2_dir}/{{samp_no}}_STAR_IM62_v3_MD_Split_Q60_NS.bam", samp_no=sampe_nos
+        expand("{prefix}_STAR_IM62_v3_MD_Split_Q60.bam", prefix=["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28"], star_pass2_dir=star_pass2_dir)
     output:
-        f"{star_pass2_dir}/{samp_name}_STAR_IM62_v3_MD_Split_Q60_NS.bam", samp_name=samp_names
+        output_files = list(get_output_filenames())
+    run:
+        for old_file, new_file in zip(input, output.output_files):
+            shell("mv {old_file} {new_file}")
+
+rule gff3_to_gtf:
+    input:
+        gff=f"{ref_dir}/{gff}"
+    output:
+        gtf=f"{ref_dir}/MguttatusvarIM62v3.1.primaryTrs.gtf"
     shell:
-        "cp {input} {output}"
+        """
+        ml gffread/0.11.6-GCCcore-8.3.0
+        gffread {input.gff} -T -o {input.gtf}
+        """
 
 rule feature_counts:
     input:
-        rscript=f"{scripts_dir}/feature_counts.r",
-        gff=f"{ref_dir}/{gff}"
+	    rscript=f"{scripts_dir}/feature_counts.r"
     output:
-        caes_counts=f"{star_pass2_dir}/endosperm_counts_caes_object",
+	    caes_counts=f"{star_pass2_dir}/endosperm_counts_caes_object",
         til_counts=f"{star_pass2_dir}/endosperm_counts_til_object"
     shell:
-        """
-        module load R/4.2.1-foss-2020b
+	    """
+	    module load R/4.2.1-foss-2020b
         R CMD BATCH {input.rscript} \
-        --annotation="{input.gff_file}" \
-        --output="{star_pass2_dir}/"
         """
+
 
