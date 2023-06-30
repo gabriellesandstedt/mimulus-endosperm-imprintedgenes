@@ -58,4 +58,34 @@ rule classify_alleles_til:
         python {input.py_script} {input.LxS2} {input.til_bed} > {output.LxS2_final}
         python {input.py_script} {input.LxS3} {input.til_bed} > {output.LxS3_final}
         """
-          
+
+
+
+
+
+rule classify_alleles_caes:
+    input:
+        py_script=f"{star_pass2_dir}/Classify_Alleles.py",
+        caes_bed=f"{bed_dir}/final_caes.bed",
+        inputs=[
+            f"{star_pass2_dir}/31_S8_STAR_IM62_v3_MD_Split_Q60.bam",
+            f"{star_pass2_dir}/33_S22_STAR_IM62_v3_MD_Split_Q60.bam",
+            f"{star_pass2_dir}/48_S28_STAR_IM62_v3_MD_Split_Q60.bam",
+            f"{star_pass2_dir}/35_S10_STAR_IM62_v3_MD_Split_Q60.bam",
+            f"{star_pass2_dir}/52_S15_STAR_IM62_v3_MD_Split_Q60.bam",
+            f"{star_pass2_dir}/45_S14_STAR_IM62_v3_MD_Split_Q60.bam"
+        ]
+    output:
+        outputs=[
+            f"{star_pass2_dir}/count_alleles_UTCxTWN_1.txt",
+            f"{star_pass2_dir}/count_alleles_UTCxTWN_2.txt",
+            f"{star_pass2_dir}/count_alleles_UTCxTWN_3.txt",
+            f"{star_pass2_dir}/count_alleles_TWNxUTC_1.txt",
+            f"{star_pass2_dir}/count_alleles_TWNxUTC_2.txt",
+            f"{star_pass2_dir}/count_alleles_TWNxUTC_3.txt"
+        ]
+    run:
+        module load Pysam/0.10.0-GCCcore-8.3.0-Python-2.7.16
+
+        for input_file, output_file in zip(input.inputs, output.outputs):
+            shell("python {input.py_script} {input_file} {input.caes_bed} > {output_file}")
