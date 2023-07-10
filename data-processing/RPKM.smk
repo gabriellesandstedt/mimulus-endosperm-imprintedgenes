@@ -15,4 +15,4 @@ awk -v OFS='\t' '{print $1, $3 - $2, $4}' genes2.bed > gene_lengths.txt
 
 
 
-awk -v OFS='\t' '{print $1, $2}' gene_lengths_unique_shared_til_MEGs.txt > gene_lengths_unique_shared_til_MEGs2.txt
+awk -v OFS='\t' '{print $1, $2}' gene_lengths_shared_callable.txt > gene_lengths_shared_callable2.txt
