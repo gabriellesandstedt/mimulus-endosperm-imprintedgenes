@@ -33,7 +33,8 @@ rule all:
         expand(f"{star_pass2_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples)
 
 # define rule to mask repetitive elements in the genome
-# repeat maskeer v 4.1.2 : https://www.repeatmasker.org
+# repeat masker v 4.1.2 : https://www.repeatmasker.org
+# I first ran this rule separately
 rule repeatmasker:
     input:
         ref_genome = f"{ref_dir}/{ref}"
