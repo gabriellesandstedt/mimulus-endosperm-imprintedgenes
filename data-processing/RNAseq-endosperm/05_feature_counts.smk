@@ -60,11 +60,11 @@ rule feature_counts:
     input:
 	    rscript=f"{scripts_dir}/feature_counts.r"
     output:
-	    caes_counts=f"{star_pass2_dir}/endosperm_counts_caes_object",
+	caes_counts=f"{star_pass2_dir}/endosperm_counts_caes_object",
         til_counts=f"{star_pass2_dir}/endosperm_counts_til_object"
     shell:
-	    """
-	    module load R/4.2.1-foss-2020b
+	 """
+	module load R/4.2.1-foss-2020b
         R CMD BATCH {input.rscript} \
         """
 
