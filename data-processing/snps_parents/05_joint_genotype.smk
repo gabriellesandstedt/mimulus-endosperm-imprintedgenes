@@ -24,7 +24,7 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 # define all output files for rule all 
 rule all:
     input:
-        expand(f"{ref_dir}/{ref}.dict"),
+        expand(f"{ref_dir}/Mimulus_guttatus_var_IM62.mainGenome.dict"),
         expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
         expand(f"{data_dir}/til.vcf"),
         expand(f"{data_dir}/caes.vcf")
@@ -34,7 +34,7 @@ rule index_reference:
     input:
         ref = f"{ref_dir}/{ref}"
     output:
-        index = f"{ref_dir}/{ref}.dict"
+        index = f"{ref_dir}/Mimulus_guttatus_var_IM62.mainGenome.dict"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
