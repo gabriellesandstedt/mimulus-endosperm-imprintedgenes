@@ -215,8 +215,8 @@ rule split_caes_vcf:
         """ 
 
 # assign rule to filter by depth of tilingii samples 
-# mean covg LVR1:  19.8721X ; SD: 307.4309x
-# mean covg SOP12: 4.9261X ; SD: 53.9951X
+# mean covg LVR1:  19.8721X ; SD: 307.4309x | align to LVR:  32.2742X ; SD: 319.1183X, 671X
+# mean covg SOP12: 4.9261X ; SD: 53.9951X | align to LVR:  7.1196X ; SD: 59.5332X, 126X
 # max DP = 2 x SD + mean 
 rule filt_dp_til:
     input:
@@ -232,9 +232,9 @@ rule filt_dp_til:
         vcftools --vcf {input.LVR1_vcf} --maxDP 635 --recode --recode-INFO-all --out {output.LVR1_dp_vcf}
         """ 
         
-# assign rule to filter by depth of tilingii samples 
-# mean covg UTC1:  4.4433X ; SD: 63.0022X
-# mean covg TWN36: 5.4595X ; SD: 78.7775X
+# assign rule to filter by depth of caespitosa samples 
+# mean covg UTC1:  4.4433X ; SD: 63.0022X | align to LVR: 5.3877X ; SD: 66.0901X , 138X
+# mean covg TWN36: 5.4595X ; SD: 78.7775X | align to LVR: 6.8621X ; SD: 88.0176X, 183X
 # max DP = 2 x SD + mean 
 rule filt_dp_caes:
     input:
