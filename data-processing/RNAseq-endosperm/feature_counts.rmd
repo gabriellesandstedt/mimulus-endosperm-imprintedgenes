@@ -1,0 +1,73 @@
+---
+title: perform featureCounts for caespitosa and tilingii
+output: html_document
+---
+  
+  ```{r}
+# Load the required library and suppress messages
+suppressMessages(library(Rsubread))
+
+# Set the working directory
+setwd('/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2')
+
+# Define BAM file names for the caespitosa feature counts dataset
+bam_names_caes <- c(
+  'TWN36xUTC1_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'UTC1xTWN36_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'TWN36xUTC1_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'UTC1xTWN36_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'TWN36xUTC1_3_STAR_LVR_v1_MD_Split_Q60.bam',
+  'UTC1xTWN36_3_STAR_LVR_v1_MD_Split_Q60.bam'
+)
+
+# Perform featureCounts for the caespitosa dataset
+# I generated my.gtf using 05_feature_counts.smk
+feature_counts_caes <- featureCounts(
+  files = bam_names_caes,
+  annot.ext = 'my.gtf',
+  isGTFAnnotationFile = TRUE,
+  useMetaFeatures = TRUE,
+  countMultiMappingReads = FALSE,
+  ignoreDup = FALSE,
+  strandSpecific = 2,
+  isPairedEnd = TRUE,
+  requireBothEndsMapped = TRUE,
+  countChimericFragments = FALSE,
+  autosort = TRUE,
+  nthreads = 6,
+  verbose = TRUE
+)
+
+# Save the caespitosa dataset result as an RDS file
+saveRDS(feature_counts_caes, 'endosperm_counts_caes_object')
+
+# Define BAM file names for the tilingii dataset
+bam_names_til <- c(
+  'LVR1xSOP12_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'SOP12xLVR1_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'LVR1xSOP12_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'SOP12xLVR1_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'LVR1xSOP12_3_STAR_LVR_v1_MD_Split_Q60.bam',
+  'SOP12xLVR1_3_STAR_LVR_v1_MD_Split_Q60.bam'
+)
+
+# Perform featureCounts for tilingii dataset
+# I generated my.gtf using 05_feature_counts.smk
+feature_counts_til <- featureCounts(
+  files = bam_names_til,
+  annot.ext = 'my.gtf',
+  isGTFAnnotationFile = TRUE,
+  useMetaFeatures = TRUE,
+  countMultiMappingReads = FALSE,
+  ignoreDup = FALSE,
+  strandSpecific = 2,
+  isPairedEnd = TRUE,
+  requireBothEndsMapped = TRUE,
+  countChimericFragments = FALSE,
+  autosort = TRUE,
+  nthreads = 6,
+  verbose = TRUE
+)
+
+# Save the tilingii dataset result as an RDS file
+saveRDS(feature_counts_til, 'endosperm_counts_til_object')
