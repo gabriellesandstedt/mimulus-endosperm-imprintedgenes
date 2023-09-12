@@ -58,7 +58,7 @@ rule gff3_to_gtf:
 
 rule feature_counts:
     input:
-	    rscript=f"{scripts_dir}/feature_counts.r"
+	rscript=f"{scripts_dir}/feature_counts.r"
     output:
 	caes_counts=f"{star_pass2_dir}/endosperm_counts_caes_object",
         til_counts=f"{star_pass2_dir}/endosperm_counts_til_object"
