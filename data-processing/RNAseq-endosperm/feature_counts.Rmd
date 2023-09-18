@@ -1,6 +1,6 @@
 ---
 title: perform featureCounts for caespitosa and tilingii
-output: html_document
+
 ---
   
 ```{r}
