@@ -3,7 +3,7 @@ title: perform featureCounts for caespitosa and tilingii
 output: html_document
 ---
   
-  ```{r}
+```{r}
 # Load the required library and suppress messages
 suppressMessages(library(Rsubread))
 
@@ -71,3 +71,4 @@ feature_counts_til <- featureCounts(
 
 # Save the tilingii dataset result as an RDS file
 saveRDS(feature_counts_til, 'endosperm_counts_til_object')
+```
