@@ -10,11 +10,11 @@
 import os
 
 # assign directories
-ref_dir="/scratch/gds44474/MIMULUS/ref_genome"
-star_pass2_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
+ref_dir="/scratch/gds44474/MIMULUS/ref_genome_til"
+star_pass2_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2"
 
 # assign genome files
-gff = "MguttatusvarIM62v3.1.primaryTrs.gff3"
+gff = "MtilingiivarLVRv1.1.primaryTrs.gff3"
 
 # assign samples
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
@@ -22,7 +22,7 @@ samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", 
 # define all output files in rule all 
 rule all:
     input:
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam" , sample=samples),
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_LVR_V1_MD_Split_Q60_NS.bam" , sample=samples),
         expand(f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt", sample=samples),
         f"{star_pass2_dir}/merged_counts.txt",
         f"{star_pass2_dir}/merged_gene_counts.txt" 
@@ -30,9 +30,9 @@ rule all:
 # define rule to sort bams by name         
 rule name_sort_bam:
     input:
-        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60.bam"
+        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60.bam"
     output:
-        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam"
+        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60_NS.bam"
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
@@ -41,10 +41,9 @@ rule name_sort_bam:
 
 # define rule to count number of reads per gene for each sample
 # HTSeq v 0.13.5: https://htseq.readthedocs.io/en/master/
-# 25118 genes in IM62 v3 genome
 rule gene_counts:        
     input:
-        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_IM62_v3_MD_Split_Q60_NS.bam",
+        ns_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60_NS.bam",
         gff_file=f"{ref_dir}/{gff}"
     output:
         gene_counts=f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt"
