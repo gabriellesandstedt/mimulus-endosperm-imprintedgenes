@@ -104,6 +104,6 @@ rule star_alignment_pass2:
     shell:
         """
         ml STAR/2.7.10a-GCC-8.3.0
-        STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.sj_files} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass2_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:IM62.v3 DS:RNAseq
+        STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.sj_files} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass2_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq
         """
 
