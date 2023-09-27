@@ -11,11 +11,11 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents/data"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
+data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
+ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
 
-# reference genome: Mimulus IM62 v3
-ref = "Mimulus_guttatus_var_IM62.mainGenome.fasta"
+# reference genome: Mimulus LVR1 v1 
+ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
 # define interval list with list of chromosomes
 interval_list = "intervals.list"
 # assign samples
@@ -24,17 +24,16 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 # define all output files for rule all 
 rule all:
     input:
-        expand(f"{ref_dir}/Mimulus_guttatus_var_IM62.mainGenome.dict"),
+        expand(f"{ref_dir}/Mimulus_tilingii_var_LVR.mainGenome.dict"),
         expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
         expand(f"{data_dir}/til.vcf"),
         expand(f"{data_dir}/caes.vcf")
 
-# define rule to index reference with GATK 
 rule index_reference:
     input:
         ref = f"{ref_dir}/{ref}"
     output:
-        index = f"{ref_dir}/Mimulus_guttatus_var_IM62.mainGenome.dict"
+        index = f"{ref_dir}/Mimulus_tilingii_var_LVR.mainGenome.dict"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
