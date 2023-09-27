@@ -30,7 +30,7 @@ rule select_biallelic_snps_til:
         biallelic_vcf=f"{data_dir}/til_biallelic_snps.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk SelectVariants \
             -R {input.ref} \
             -V {input.vcf} \
@@ -48,7 +48,7 @@ rule select_biallelic_snps_caes:
         biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk SelectVariants \
             -R {input.ref} \
             -V {input.vcf} \
@@ -101,7 +101,7 @@ rule filter_variants_til:
         filtered_vcf=f"{data_dir}/til_biallelic_snps_filter.vcf"
     shell:
         """
-        module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
@@ -124,7 +124,7 @@ rule filter_variants_caes:
         filtered_vcf=f"{data_dir}/caes_biallelic_snps_filter.vcf"
     shell:
         """
-        module load GATK/4.3.0.0-GCCcore-8.3.0-Java-1.8
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.biallelic_vcf} \
@@ -168,7 +168,7 @@ rule rem_hets_til:
         nohet_vcf=f"{data_dir}/til_biallelic_snps_filtered_nohets.vcf"
     shell:
         """
-        module load BCFtools/1.15.1-GCC-10.2.0
+        module load BCFtools/1.15.1-GCC-11.3.0
         bcftools view -g ^het {input.filtered_passed_vcf} > {output.nohet_vcf}
         """  
         
@@ -180,7 +180,7 @@ rule rem_hets_caes:
         nohet_vcf=f"{data_dir}/caes_biallelic_snps_filtered_nohets.vcf"
     shell:
         """
-        module load BCFtools/1.15.1-GCC-10.2.0
+        module load BCFtools/1.15.1-GCC-11.3.0
         bcftools view -g ^het {input.filtered_passed_vcf} > {output.nohet_vcf}
         """  
         
@@ -194,7 +194,7 @@ rule split_til_vcf:
         LVR1_vcf=f"{data_dir}/LVR1_snps.vcf"
     shell:
         """
-        module load VCFtools/0.1.16-GCC-10.2.0
+        module load VCFtools/0.1.16-GCC-11.2.0
         vcftools --remove-indv SRR12424410 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.LVR1_vcf}
         vcftools --remove-indv SRR3103524 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.SOP12_vcf}
         """
@@ -209,7 +209,7 @@ rule split_caes_vcf:
         TWN36_vcf=f"{data_dir}/TWN36_snps.vcf"
     shell:
         """
-        module load VCFtools/0.1.16-GCC-10.2.0
+        module load VCFtools/0.1.16-GCC-11.2.0
         vcftools --remove-indv SRR12424421 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.UTC1_vcf}
         vcftools --remove-indv SRR12424419 --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.TWN36_vcf}
         """ 
@@ -227,7 +227,7 @@ rule filt_dp_til:
         LVR1_dp_vcf=f"{data_dir}/LVR1_snps_dp.vcf"
     shell:
         """
-        module load VCFtools/0.1.16-GCC-10.2.0
+        module load VCFtools/0.1.16-GCC-11.2.0
         vcftools --vcf {input.SOP12_vcf} --maxDP 126 --recode --recode-INFO-all --out {output.SOP12_dp_vcf}
         vcftools --vcf {input.LVR1_vcf} --maxDP 671 --recode --recode-INFO-all --out {output.LVR1_dp_vcf}
         """ 
@@ -245,7 +245,7 @@ rule filt_dp_caes:
         TWN36_dp_vcf=f"{data_dir}/TWN36_snps_dp.vcf"
     shell:
         """
-        module load VCFtools/0.1.16-GCC-10.2.0
+        module load VCFtools/0.1.16-GCC-11.2.0
         vcftools --vcf {input.UTC1_vcf} --maxDP 138  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
         vcftools --vcf {input.TWN36_vcf} --maxDP 183  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
         """     
@@ -268,7 +268,7 @@ rule vcf_to_gzvcf:
         TWN36_dp_tabix=f"{data_dir}/TWN36_snps_dp.vcf.recode.vcf.gz.tbi"
     shell:
         """
-        module load HTSlib/1.15.1-GCC-10.2.0
+        module load  HTSlib/1.15.1-GCC-11.3.0
         bgzip {input.SOP12_dp_vcf}
         bgzip {input.LVR1_dp_vcf}
         bgzip {input.UTC1_dp_vcf}
@@ -291,7 +291,7 @@ rule merge_vcfs:
         caes_merged_vcf=f"{data_dir}/caes_snps_filtered_maxdp.vcf"
     shell:
         """
-        module load  BCFtools/1.15.1-GCC-10.2.0
+        module load  BCFtools/1.15.1-GCC-11.3.0
         bcftools merge {input.SOP12_dp_gzvcf} {input.LVR1_dp_gzvcf}  > {output.til_merged_vcf}
         bcftools merge {input.UTC1_dp_gzvcf} {input.TWN36_dp_gzvcf}  > {output.caes_merged_vcf}
         """   
@@ -307,7 +307,7 @@ rule final_til_vcf:
         final_til_vcf=f"{data_dir}/til_snps_filtered_DP_mac.vcf",
     shell:
         """
-        module load VCFtools/0.1.16-GCC-10.2.0
+        module load VCFtools/0.1.16-GCC-11.2.0
         vcftools \
          --vcf {input.til_merged_vcf} \
          --remove-indels \
@@ -330,7 +330,7 @@ rule final_caes_vcf:
         final_caes_vcf=f"{data_dir}/caes_snps_filtered_DP_mac.vcf",
     shell:
         """
-        module load VCFtools/0.1.16-GCC-10.2.0
+        module load VCFtools/0.1.16-GCC-11.2.0
         vcftools \
          --vcf {input.caes_merged_vcf} \
          --remove-indels \
@@ -352,7 +352,7 @@ rule vcfs_to_bed:
         final_caes_bed=f"{data_dir}/caes.bed"
     shell:
         """
-        module load BEDOPS/2.4.39-foss-2019b
+        module load BEDOPS/2.4.41-foss-2021b
         vcf2bed < {input.final_til_vcf} > {output.final_til_bed}
         vcf2bed < {input.final_caes_vcf} > {output.final_caes_bed}
         """ 
