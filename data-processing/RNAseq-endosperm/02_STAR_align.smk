@@ -13,8 +13,8 @@ import os
 ref_dir="/scratch/gds44474/MIMULUS/ref_genome_til"
 repeatmasker_dir="/scratch/gds44474/MIMULUS/ref_genome_til/RepeatMasker"
 STAR_genome_dir="/scratch/gds44474/MIMULUS/ref_genom_tile/RepeatMasker/STARgenome"
-data_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data"
-star_pass2_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
+data_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data"
+star_pass2_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2"
 
 # assign genome files
 ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
