@@ -36,7 +36,7 @@ rule index_reference:
         index = f"{ref_dir}/Mimulus_tilingii_var_LVR.mainGenome.dict"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk CreateSequenceDictionary \
             -R {input.ref} \
             -O {output.index}
@@ -52,7 +52,7 @@ rule hap_caller:
         gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk HaplotypeCaller \
             -I {input.CS_bam} \
             -O {output.gvcf} \
@@ -72,7 +72,7 @@ rule combine_gvcfs_til:
         til_gvcf = f"{data_dir}/til.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk CombineGVCFs \
             -R {input.ref} \
             --variant {input.SOP12_gvcf} \
@@ -92,7 +92,7 @@ rule combine_gvcfs_caes:
         caes_gvcf = f"{data_dir}/caes.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk CombineGVCFs \
             -R {input.ref} \
             --variant {input.UTC1_gvcf} \
@@ -111,7 +111,7 @@ rule joint_genotype_til:
         til_vcf=f"{data_dir}/til.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk GenotypeGVCFs \
             -R {input.ref} \
             -V {input.til_gvcf} \
@@ -130,7 +130,7 @@ rule joint_genotype_caes:
         caes_vcf=f"{data_dir}/caes.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk GenotypeGVCFs \
             -R {input.ref} \
             -V {input.caes_gvcf} \
