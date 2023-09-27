@@ -9,11 +9,11 @@
 ################################################################################
 
 # assign directories
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents/data"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
+data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
+ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
 
 # assign files 
-gff3= "MguttatusvarIM62v3.1.primaryTrs.gff3"
+gff3= "MtilingiivarLVRv1.1.primaryTrs.gff3"
 
 
 # assign rule for all expected output files from this script 
