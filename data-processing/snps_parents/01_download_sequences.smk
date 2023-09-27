@@ -10,7 +10,7 @@
 import os
 
 # assign data directory
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents/data"
+data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
 
 # assign samples to be downloaded from NCBI
 # "SRR12424410" = SOP12, til
