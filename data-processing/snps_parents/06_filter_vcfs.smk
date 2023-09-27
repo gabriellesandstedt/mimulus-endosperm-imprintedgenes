@@ -11,12 +11,12 @@
 import os
 
 # assign directories
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents/data"
-scripts_dir = "/scratch/gds44474/MIMULUS/snps_parents/scripts"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome"
+data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
+scripts_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/scripts"
+ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
 
 # reference genome: Mimulus IM62 v3
-ref = "Mimulus_guttatus_var_IM62.mainGenome.fasta"
+ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
 
 # assign samples for individual depth filtering
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
@@ -215,8 +215,8 @@ rule split_caes_vcf:
         """ 
 
 # assign rule to filter by depth of tilingii samples 
-# mean covg LVR1:  19.8721X ; SD: 307.4309x | align to LVR:  32.2742X ; SD: 319.1183X, 671X
-# mean covg SOP12: 4.9261X ; SD: 53.9951X | align to LVR:  7.1196X ; SD: 59.5332X, 126X
+# mean covg LVR1:  32.2742X ; SD: 319.1183X, 671X
+# mean covg SOP12: 7.1196X ; SD: 59.5332X, 126X
 # max DP = 2 x SD + mean 
 rule filt_dp_til:
     input:
@@ -228,13 +228,13 @@ rule filt_dp_til:
     shell:
         """
         module load VCFtools/0.1.16-GCC-10.2.0
-        vcftools --vcf {input.SOP12_vcf} --maxDP 113 --recode --recode-INFO-all --out {output.SOP12_dp_vcf}
-        vcftools --vcf {input.LVR1_vcf} --maxDP 635 --recode --recode-INFO-all --out {output.LVR1_dp_vcf}
+        vcftools --vcf {input.SOP12_vcf} --maxDP 126 --recode --recode-INFO-all --out {output.SOP12_dp_vcf}
+        vcftools --vcf {input.LVR1_vcf} --maxDP 671 --recode --recode-INFO-all --out {output.LVR1_dp_vcf}
         """ 
         
 # assign rule to filter by depth of caespitosa samples 
-# mean covg UTC1:  4.4433X ; SD: 63.0022X | align to LVR: 5.3877X ; SD: 66.0901X , 138X
-# mean covg TWN36: 5.4595X ; SD: 78.7775X | align to LVR: 6.8621X ; SD: 88.0176X, 183X
+# mean covg UTC1: 5.3877X ; SD: 66.0901X , 138X
+# mean covg TWN36: 6.8621X ; SD: 88.0176X, 183X
 # max DP = 2 x SD + mean 
 rule filt_dp_caes:
     input:
@@ -246,8 +246,8 @@ rule filt_dp_caes:
     shell:
         """
         module load VCFtools/0.1.16-GCC-10.2.0
-        vcftools --vcf {input.UTC1_vcf} --maxDP 131  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
-        vcftools --vcf {input.TWN36_vcf} --maxDP 163  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
+        vcftools --vcf {input.UTC1_vcf} --maxDP 138  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
+        vcftools --vcf {input.TWN36_vcf} --maxDP 183  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
         """     
 
 # assign rule to bgzip and index all vcfs 
@@ -300,7 +300,6 @@ rule merge_vcfs:
 # min DP 4 
 # doesn't allow any missing genotypes with max-missing 0
 # minor allele count (mac) of 1
-# 1085414 sites remained
 rule final_til_vcf:
     input:
         til_merged_vcf=f"{data_dir}/til_snps_filtered_maxdp.vcf"
@@ -324,7 +323,6 @@ rule final_til_vcf:
 # min DP 4 
 # doesn't allow any missing genotypes with max-missing 0
 # minor allele count (mac) of 1
-# 322508 sites remained
 rule final_caes_vcf:
     input:
         caes_merged_vcf=f"{data_dir}/caes_snps_filtered_maxdp.vcf"
