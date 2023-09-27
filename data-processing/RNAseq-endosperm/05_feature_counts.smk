@@ -10,12 +10,12 @@
 import os
 
 # assign directories
-star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
-scripts_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/scripts"
-ref_dir="/scratch/gds44474/MIMULUS/ref_genome"
+star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2"
+scripts_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/scripts"
+ref_dir="/scratch/gds44474/MIMULUS/ref_genome_til"
 
 # assign gff
-gff = "MguttatusvarIM62v3.1.primaryTrs.gff3"
+gff = "MtilingiivarLVRv1.1.primaryTrs.gff3"
 
 def get_output_filenames():
     prefix_mapping = {
@@ -34,11 +34,11 @@ def get_output_filenames():
     }
     for prefix in ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28"]:
         new_prefix = prefix_mapping[prefix]
-        yield f"{star_pass2_dir}/{new_prefix}_STAR_IM62_v3_MD_Split_Q60.bam"
+        yield f"{star_pass2_dir}/{new_prefix}_STAR_LVR_v1_MD_Split_Q60.bam"
 
 rule rename_files:
     input:
-        expand("{prefix}_STAR_IM62_v3_MD_Split_Q60.bam", prefix=["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28"], star_pass2_dir=star_pass2_dir)
+        expand("{prefix}_STAR_LVR_v1_MD_Split_Q60.bam", prefix=["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28"], star_pass2_dir=star_pass2_dir)
     output:
         output_files = list(get_output_filenames())
     run:
@@ -49,7 +49,7 @@ rule gff3_to_gtf:
     input:
         gff=f"{ref_dir}/{gff}"
     output:
-        gtf=f"{ref_dir}/MguttatusvarIM62v3.1.primaryTrs.gtf"
+        gtf=f"{ref_dir}/MtilingiivarLVRv1.1.primaryTrs.gtf"
     shell:
         """
         ml gffread/0.11.6-GCCcore-8.3.0
