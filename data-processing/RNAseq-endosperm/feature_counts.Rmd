@@ -2,15 +2,17 @@
 title: perform featureCounts for caespitosa and tilingii
 
 ---
-  
-```{r}
+
 # Load the required library and suppress messages
+```{r}
 suppressMessages(library(Rsubread))
 
 # Set the working directory
 setwd('/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2')
+```
 
 # Define BAM file names for the caespitosa feature counts dataset
+```{r}
 bam_names_caes <- c(
   'TWN36xUTC1_1_STAR_LVR_v1_MD_Split_Q60.bam',
   'UTC1xTWN36_1_STAR_LVR_v1_MD_Split_Q60.bam',
@@ -19,9 +21,11 @@ bam_names_caes <- c(
   'TWN36xUTC1_3_STAR_LVR_v1_MD_Split_Q60.bam',
   'UTC1xTWN36_3_STAR_LVR_v1_MD_Split_Q60.bam'
 )
+```
 
 # Perform featureCounts for the caespitosa dataset
 # I generated MtilingiivarLVRv1.1.primaryTrs.gtf using 05_feature_counts.smk
+```{r}
 feature_counts_caes <- featureCounts(
   files = bam_names_caes,
   annot.ext = 'MtilingiivarLVRv1.1.primaryTrs.gtf',
@@ -40,8 +44,11 @@ feature_counts_caes <- featureCounts(
 
 # Save the caespitosa dataset result as an RDS file
 saveRDS(feature_counts_caes, 'endosperm_counts_caes_object')
+```
+
 
 # Define BAM file names for the tilingii dataset
+```{r}
 bam_names_til <- c(
   'LVR1xSOP12_1_STAR_LVR_v1_MD_Split_Q60.bam',
   'SOP12xLVR1_1_STAR_LVR_v1_MD_Split_Q60.bam',
@@ -50,9 +57,11 @@ bam_names_til <- c(
   'LVR1xSOP12_3_STAR_LVR_v1_MD_Split_Q60.bam',
   'SOP12xLVR1_3_STAR_LVR_v1_MD_Split_Q60.bam'
 )
+```
 
 # Perform featureCounts for tilingii dataset
-# I generated my.gtf using 05_feature_counts.smk
+# I generated MtilingiivarLVRv1.1.primaryTrs.gtf using 05_feature_counts.smk
+```{r}
 feature_counts_til <- featureCounts(
   files = bam_names_til,
   annot.ext = 'MtilingiivarLVRv1.1.primaryTrs.gtf',
