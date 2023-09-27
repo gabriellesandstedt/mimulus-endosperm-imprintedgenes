@@ -13,7 +13,7 @@ import os
 
 # assign directories
 raw_dir = "/scratch/gds44474/MIMULUS/rna_seq/rawfiles"
-data_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm/data"
+data_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data"
 qc1_dir = f"{data_dir}/FASTQC1"
 qc2_dir = f"{data_dir}/FASTQC2"
 log_dir = f"{data_dir}/logs"
