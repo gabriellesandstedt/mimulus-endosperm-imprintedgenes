@@ -94,7 +94,6 @@ rule modify_til_bed:
         """
 
 # caespitosa: count number of genes with a snp
-# 19212 genes with a snp 
 rule count_snp_caes:
     input:
         final_caes_bed=f"{data_dir}/final_caes.bed"
@@ -106,7 +105,6 @@ rule count_snp_caes:
         """ 
 
 # tilingii: count number of genes with a snp
-# 22356 genes with a snp 
 rule count_snp_til:
     input:
         final_til_bed=f"{data_dir}/final_til.bed"
