@@ -10,7 +10,7 @@
 import os
 
 # assign data directory
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents/data"
+data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
 qc1_dir = f"{data_dir}/FASTQC1"
 qc2_dir = f"{data_dir}/FASTQC2"
 log_dir = f"{data_dir}/logs"
