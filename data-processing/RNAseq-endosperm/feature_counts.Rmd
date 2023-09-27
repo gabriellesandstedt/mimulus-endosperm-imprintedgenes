@@ -21,10 +21,10 @@ bam_names_caes <- c(
 )
 
 # Perform featureCounts for the caespitosa dataset
-# I generated my.gtf using 05_feature_counts.smk
+# I generated MtilingiivarLVRv1.1.primaryTrs.gtf using 05_feature_counts.smk
 feature_counts_caes <- featureCounts(
   files = bam_names_caes,
-  annot.ext = 'my.gtf',
+  annot.ext = 'MtilingiivarLVRv1.1.primaryTrs.gtf',
   isGTFAnnotationFile = TRUE,
   useMetaFeatures = TRUE,
   countMultiMappingReads = FALSE,
@@ -55,7 +55,7 @@ bam_names_til <- c(
 # I generated my.gtf using 05_feature_counts.smk
 feature_counts_til <- featureCounts(
   files = bam_names_til,
-  annot.ext = 'my.gtf',
+  annot.ext = 'MtilingiivarLVRv1.1.primaryTrs.gtf',
   isGTFAnnotationFile = TRUE,
   useMetaFeatures = TRUE,
   countMultiMappingReads = FALSE,
