@@ -10,17 +10,17 @@
 import os
 
 # assign directories
-ref_dir="/scratch/gds44474/MIMULUS/ref_genome"
-repeatmasker_dir="/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker"
-STAR_genome_dir="/scratch/gds44474/MIMULUS/ref_genome/RepeatMasker/STARgenome"
+ref_dir="/scratch/gds44474/MIMULUS/ref_genome_til"
+repeatmasker_dir="/scratch/gds44474/MIMULUS/ref_genome_til/RepeatMasker"
+STAR_genome_dir="/scratch/gds44474/MIMULUS/ref_genom_tile/RepeatMasker/STARgenome"
 data_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data"
 star_pass2_dir="/scratch/gds44474/MIMULUS/RNAseq_endosperm/data/star_pass2"
 
 # assign genome files
-ref = "Mimulus_guttatus_var_IM62.mainGenome.fasta"
-masked_ref = "Mimulus_guttatus_var_IM62.mainGenome.fasta.masked"
-masked_ref2 = "Mimulus_guttatus_var_IM62.mainGenome.masked.fasta"
-gff = "MguttatusvarIM62v3.1.primaryTrs.gff3"
+ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
+masked_ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta.masked"
+masked_ref2 = "Mimulus_tilingii_var_LVR.mainGenome.masked.fasta"
+gff = "MtilingiivarLVRv1.1.primaryTrs.gff3"
 
 # assign samples
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
