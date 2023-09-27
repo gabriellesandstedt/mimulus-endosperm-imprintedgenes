@@ -33,7 +33,7 @@ rule gff_to_bed:
         genes_bed=f"{data_dir}/genes.bed"
     shell:
         """
-        module load BEDOPS/2.4.39-foss-2019b
+        module load BEDOPS/2.4.41-foss-2021b
         gff2bed < {input.gff} > {output.genes_bed}
         """ 
 
@@ -47,7 +47,7 @@ rule modify_caes_bed:
         final_caes_bed=f"{data_dir}/final_caes.bed"
     shell:
         """
-        module load BEDTools/2.30.0-GCC-10.2.0
+        module load BEDTools/2.30.0-GCC-12.2.0
 
         awk 'BEGIN{{OFS="\t"}} {{
             if (FNR == 0) print
@@ -75,7 +75,7 @@ rule modify_til_bed:
         final_til_bed=f"{data_dir}/final_til.bed"
     shell:
         """
-        module load BEDTools/2.30.0-GCC-10.2.0
+        module load BEDTools/2.30.0-GCC-12.2.0
 
         awk 'BEGIN{{OFS="\t"}} {{
             if (FNR == 0) print
