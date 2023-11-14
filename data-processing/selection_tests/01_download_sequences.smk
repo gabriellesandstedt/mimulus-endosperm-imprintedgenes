@@ -50,6 +50,6 @@ rule download_fastq:
         echo -e "\\n\\n["$(date)"]\\n Load SRA-Toolkit...\\n\\n"
         module load SRA-Toolkit/3.0.3-gompi-2022a
         echo -e "\\n["$(date)"]\\n Download {params.sra} from SRA database \\n"
-        prefetch {params.sra} && fastq-dump --split-e --gzip {params.sra} -O {data_dir}
+        prefetch {params.sra} && fastq-dump --split-3 --gzip {params.sra} -O {data_dir}
         sleep 60
         """
