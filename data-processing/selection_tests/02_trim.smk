@@ -20,7 +20,7 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421", "SRR124244
 
 # define output files for rule all
 rule all:
-    output:
+    input:
         expand(f"{qc1_dir}/{{sample}}_1_fastqc.html", sample=samples),
         expand(f"{qc1_dir}/{{sample}}_2_fastqc.html", sample=samples),
         expand(f"{data_dir}/{{sample}}_1_trim.fq.gz", sample=samples),
