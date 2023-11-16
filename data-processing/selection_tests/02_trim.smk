@@ -16,7 +16,7 @@ qc2_dir = f"{data_dir}/FASTQC2"
 log_dir = f"{data_dir}/logs"
 
 # assign samples to be trimmed
-samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413"]
+samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421", "SRR12424411", "SRR12424412", "SRR12424417", "SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413"]
 
 # define output files for rule all
 rule all:
@@ -27,7 +27,8 @@ rule all:
         expand(f"{data_dir}/{{sample}}_2_trim.fq.gz", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_1_trim_fastqc.html", sample=samples),
         expand(f"{qc2_dir}/{{sample}}_2_trim_fastqc.html", sample=samples)
-        
+
+
 # define rule to assess quality of fastqs with FastQC
 # FASTQC v 0.11.9 : https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 rule fastqc_raw:
@@ -44,13 +45,14 @@ rule fastqc_raw:
         """
         module load FastQC/0.11.9-Java-11
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.fq1} ...\\n"
-        fastqc -o {qc1_dir} --noextract {input.fq1} &> {log.log1}
+        fastqc -o {qc1_dir} --noextract {input.fq1} &> {log.log1} 
         echo -e "\\n["$(date)"]\\n FastQC round 1, read 1 finished ...\\n"
 
         echo -e "\\n["$(date)"]\\n Run FastQC on fastq file {input.fq2} ...\\n"
         fastqc -o {qc1_dir} --noextract {input.fq2} &> {log.log2}
         echo -e "\\n["$(date)"]\\n FastQC round 1, read 2 finished ...\\n"
         """
+
 # define rule to trim adapter sequences and filter raw fastq reads using trimmomatic
 # trimmomatic v 0.39: http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf
 rule trimmomatic:
