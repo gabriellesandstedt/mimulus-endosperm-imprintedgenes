@@ -23,7 +23,7 @@ def extract_sequences(fasta_file, genes_of_interest_file, output_file):
                 output.write(line)
 
 # define input files, 
-# all_genes_fasta.fa is the fasta file with all gene sequences extracted from it ( i saved this specific file to helper files)
+# all_genes_fasta.fa is the fasta file with all gene sequences extracted from it ( i saved this specific file to misc folder)
 # genes_of_interest_file.txt includes a text file with a list of the gene names 
 # specify the output file with output.fasta
 fasta_file = 'all_genes_fasta.fa'
