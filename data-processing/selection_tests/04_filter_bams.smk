@@ -3,8 +3,8 @@
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
-## snakemake version: 6.3.0
-## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 04_filter_bams.smk
+## snakemake version: snakemake/7.22.0-foss-2022a
+## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60 -s 04_filter_bams.smk
 ################################################################################
 ################################################################################
 import os
@@ -14,7 +14,7 @@ from snakemake.io import expand
 data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
 
 # assign sample names of bam files to be filtered
-samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
+samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413"]
 
 # assign all output files to rule all
 rule all:
@@ -38,7 +38,7 @@ rule add_or_replace_read_groups:
         RG_bai=f"{data_dir}/{{sample}}_RG.bam.bai"
     shell:
         """
-        module load picard/2.27.4-Java-13.0.2
+        module load picard/2.27.5-Java-15
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n Add read groups..\\n"
         java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups \
@@ -64,7 +64,7 @@ rule mark_duplicates:
         MD_bai=f"{data_dir}/{{sample}}_RG_MD.bam.bai"
     shell:
         """
-        module load picard/2.27.4-Java-13.0.2
+        module load picard/2.27.5-Java-15
         module load SAMtools/1.16.1-GCC-11.3.0
         echo -e "\\n["$(date)"]\\n mark and remove duplicates..\\n"
         java -jar $EBROOTPICARD/picard.jar MarkDuplicates I={input.RG_bam} O={output.MD_bam} REMOVE_DUPLICATES=TRUE M={output.MD_log}
@@ -138,7 +138,7 @@ rule qualimap:
         quali_bam=f"{data_dir}/{{sample}}_bamQC.pdf"
     shell:
         """
-        module load Qualimap/2.2.1-foss-2019b-R-3.6.2
+        module load Qualimap/2.2.1-foss-2021b-R-4.1.2
         qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} 
         """
 
