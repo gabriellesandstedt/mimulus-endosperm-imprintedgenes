@@ -11,7 +11,7 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
+data_dir = "/scratch/gds44474/MIMULUS/selection_tests/data"
 
 # assign sample names of bam files to be filtered
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413"]
