@@ -98,8 +98,7 @@ rule combine_gvcfs_caes:
         TWN36_gvcf = f"{data_dir}/TWN36.g.vcf.gz",
         interval_list = f"{data_dir}/{interval_list}"
     output:
-        til_gvcf = f"{data_dir}/til.g.vcf.gz"
-        
+        caes_gvcf = f"{data_dir}/caes.g.vcf.gz"  
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -113,8 +112,7 @@ rule combine_gvcfs_caes:
             --variant {input.KCK1_gvcf} \
             --variant {input.TWN36_gvcf} \
             -L {input.interval_list} \
-    output:
-        caes_gvcf = f"{data_dir}/caes.g.vcf.gz"
+            -O {output.caes_gvcf}
         """
 
 
