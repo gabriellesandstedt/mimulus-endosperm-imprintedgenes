@@ -16,7 +16,8 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR1242441
 rule all:
     input:
         expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
-        expand(f"{data_dir}/til.g.vcf.gz")
+        f"{data_dir}/til.g.vcf.gz",
+        f"{data_dir}/caes.g.vcf.gz"
 
 rule hap_caller:
     input:
@@ -121,9 +122,9 @@ rule joint_genotype_til:
     input:
         ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}",
-        til_gvcf=f"{data_dir}/caes.g.vcf.gz"
+        caes_gvcf=f"{data_dir}/caes.g.vcf.gz"
     output:
-        til_vcf=f"{data_dir}/caes.vcf"
+        caes_vcf=f"{data_dir}/caes.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
