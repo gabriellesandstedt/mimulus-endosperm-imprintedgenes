@@ -1,4 +1,4 @@
-import os
+cd import os
 from snakemake.io import expand
 
 # Define the paths to data files
@@ -85,7 +85,7 @@ rule joint_genotype_til:
         """
 
 
-# define rule to combine tilingii gvcfs 
+# define rule to combine caes gvcfs 
 # I renamed the vcfs from their SRA IDs to their population & line names 
 rule combine_gvcfs_caes:
     input:
@@ -118,7 +118,7 @@ rule combine_gvcfs_caes:
 
 
 # define rule to joint genotype for caes samples 
-rule joint_genotype_til:
+rule joint_genotype_caes:
     input:
         ref=f"{ref_dir}/{ref}",
         intervals=f"{data_dir}/{interval_list}",
@@ -136,3 +136,61 @@ rule joint_genotype_til:
             --all-sites \
             -O {output.caes_vcf}
         """
+
+# define rule to combine all gvcfs 
+# I renamed the vcfs from their SRA IDs to their population & line names 
+rule combine_gvcfs_caes:
+    input:
+        ref = f"{ref_dir}/{ref}",
+        UTC1_gvcf = f"{data_dir}/UTC1.g.vcf.gz",
+        UTC2_gvcf = f"{data_dir}/UTC2.g.vcf.gz",
+        GAB1_gvcf = f"{data_dir}/GAB1.g.vcf.gz",
+        GAB2_gvcf = f"{data_dir}/GAB2.g.vcf.gz",
+        PAG2_gvcf = f"{data_dir}/PAG2.g.vcf.gz",
+        KCK1_gvcf = f"{data_dir}/KCK1.g.vcf.gz",
+        TWN36_gvcf = f"{data_dir}/TWN36.g.vcf.gz",
+        SOP12_gvcf = f"{data_dir}/SOP12.g.vcf.gz",
+        LVR1_gvcf = f"{data_dir}/LVR.g.vcf.gz",
+        ICE10_gvcf = f"{data_dir}/ICE10.g.vcf.gz",
+        SAB1_gvcf = f"{data_dir}/SAB1.g.vcf.gz",
+        SAB19_gvcf = f"{data_dir}/SAB19.g.vcf.gz",
+        interval_list = f"{data_dir}/{interval_list}"
+    output:
+        all_gvcf = f"{data_dir}/til_caes.g.vcf.gz"  
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        gatk CombineGVCFs \
+            -R {input.ref} \
+            --variant {input.UTC1_gvcf} \
+            --variant {input.UTC2_gvcf} \
+            --variant {input.GAB1_gvcf} \
+            --variant {input.GAB2_gvcf} \
+            --variant {input.PAG2_gvcf} \
+            --variant {input.KCK1_gvcf} \
+            --variant {input.TWN36_gvcf} \
+            -L {input.interval_list} \
+            -O {output.til_caes_gvcf}
+        """
+
+
+rule joint_genotype_all:
+    input:
+        ref=f"{ref_dir}/{ref}",
+        intervals=f"{data_dir}/{interval_list}",
+        all_gvcf=f"{data_dir}/til_caes.g.vcf.gz"
+    output:
+        all_vcf=f"{data_dir}/til_caes.vcf"
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        gatk GenotypeGVCFs \
+            -R {input.ref} \
+            -V {input.all_gvcf} \
+            -L {input.intervals} \
+            --allow-old-rms-mapping-quality-annotation-data \
+            --all-sites \
+
+
+
+
