@@ -169,6 +169,11 @@ rule combine_gvcfs_caes:
             --variant {input.PAG2_gvcf} \
             --variant {input.KCK1_gvcf} \
             --variant {input.TWN36_gvcf} \
+            --variant {input.SOP12_gvcf} \
+            --variant {input.LVR1_gvcf} \
+            --variant {input.ICE10_gvcf} \
+            --variant {input.SAB1_gvcf} \
+            --variant {input.SAB19_gvcf} \
             -L {input.interval_list} \
             -O {output.til_caes_gvcf}
         """
