@@ -26,17 +26,18 @@ rule select_biallelic_snps:
 # select invariant sites
 rule select_invariant_sites:
     input:
-	ref=f"{ref_dir}/{ref}",
+        ref=f"{ref_dir}/{ref}",
         vcf=f"{data_dir}/til_caes.vcf"
     output:
-	invariant_vcf=f"{data_dir}/til_caes_invariant.vcf"
+        invariant_vcf=f"{data_dir}/til_caes_invariant.vcf"
     shell:
-	"""
-	module load  GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        """
+        module load  GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk SelectVariants \
             -R {input.ref} \
             -V {input.vcf} \
             --select-type-to-include NO_VARIATION \
             -O {output.invariant_vcf}
         """
+
 
