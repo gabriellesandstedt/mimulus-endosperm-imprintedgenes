@@ -41,3 +41,26 @@ rule select_invariant_sites:
         """
 
 
+rule variant_table:
+    input:
+        ref=f"{ref_dir}/{ref_genome}",
+        biallelic_vcf=f"{data_dir}/til_caes_biallelic_snps.vcf",
+        rscript=f"{data_dir}/filtering_diagnostics.R"
+    output:
+        table=f"{data_dir}/til_caes_variant.table"
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load R
+        gatk VariantsToTable \
+            -R {input.ref} \
+            -V {input.biallelic_vcf} \
+            -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
+            -O {output.table}
+        
+        Rscript {input.rscript}
+        """
+
+
+
+
