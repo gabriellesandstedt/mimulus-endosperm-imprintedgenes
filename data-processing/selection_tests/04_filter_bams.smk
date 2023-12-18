@@ -25,7 +25,7 @@ rule all:
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam", sample=samples),
         expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam", sample=samples),
-        expand(f"{data_dir}/{{sample}}_bamQC.pdf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS_stats/genome_results.txt", sample=samples)
 
 # define rule to add or replace read groups
 # picard v. 2.27: https://broadinstitute.github.io/picard/
@@ -135,10 +135,21 @@ rule qualimap:
     input:
         CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
     output:
-        quali_bam=f"{data_dir}/{{sample}}_bamQC.pdf"
+        quali_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS_stats/genome_results.txt"
     shell:
         """
         module load Qualimap/2.2.1-foss-2021b-R-4.1.2
         qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} 
         """
+
+### bamqc results:
+#SRR12424410
+#number of mapped reads = 16,401,824
+#mean coverageData = 7.1196X
+#std coverageData = 59.5332X
+
+
+
+
+
 
