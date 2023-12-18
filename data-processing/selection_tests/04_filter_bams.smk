@@ -143,6 +143,17 @@ rule qualimap:
         """
 
 ### bamqc results:
+
+##SRR3103524
+# number of mapped reads = 72,130,362
+# mean coverageData = 32.2742X
+# std coverageData = 319.1183X 
+
+#SRR12424416
+# number of mapped reads = 16,952,804 
+#mean coverageData = 7.1957X 
+#std coverageData = 102.7844X
+
 #SRR12424410
 #number of mapped reads = 16,401,824
 #mean coverageData = 7.1196X
@@ -194,7 +205,6 @@ rule qualimap:
 #mean coverageData = 5.3377X
 #std coverageData = 58.9155X
 
-#SRR3103524
 
 
 
