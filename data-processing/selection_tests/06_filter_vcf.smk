@@ -122,7 +122,7 @@ rule filter_invariants:
         ref=f"{ref_dir}/{ref}",
         invcf=f"{data_dir}/til_caes_invariant_geno_called.vcf"
     output:
-        filtered_invcf=f"{data_dir}/til_caes_invariant_invariant_qualfilter.vcf"
+        filtered_invcf=f"{data_dir}/til_caes_invariant_qualfilter.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -137,11 +137,11 @@ rule filter_invariants:
         """
 
 # extract passed invariants
-rule extract_passed_variants:
+rule extract_passed_invariants:
     input:
         filtered_invcf=f"{data_dir}/til_caes_invariant_qualfilter.vcf"
     output:
-        filtered_passed_invcf=f"{data_dir}/til_caes_invariant_invariant_qualfilterPASSED.vcf"
+        filtered_passed_invcf=f"{data_dir}/til_caes_invariant_qualfilterPASSED.vcf"
     shell:
         """
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
