@@ -142,6 +142,7 @@ rule qualimap:
         qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} 
         """
 
+
 ### bamqc results:
 
 ##SRR3103524
