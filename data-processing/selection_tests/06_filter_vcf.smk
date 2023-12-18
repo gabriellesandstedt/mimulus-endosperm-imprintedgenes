@@ -43,7 +43,7 @@ rule select_invariant_sites:
 
 rule variant_table:
     input:
-        ref=f"{ref_dir}/{ref_genome}",
+        ref=f"{ref_dir}/{ref}",
         biallelic_vcf=f"{data_dir}/til_caes_biallelic_snps.vcf",
         rscript=f"{data_dir}/filtering_diagnostics.R"
     output:
@@ -63,7 +63,7 @@ rule variant_table:
 
 rule invariant_table:
     input:
-        ref=f"{ref_dir}/{ref_genome}",
+        ref=f"{ref_dir}/{ref}",
         invariant_vcf=f"{data_dir}/til_caes_invariant_geno_called.vcf",
         rscript=f"{data_dir}/filtering_diagnostics.R"
     output:
@@ -80,6 +80,77 @@ rule invariant_table:
         
         Rscript {input.rscript}
         """
+
+
+# rule to filter variants:
+rule filter_variants:
+    input:
+        ref=f"{ref_dir}/{ref}",
+        biallelic_vcf=f"{data_dir}/til_caes_biallelic_snps.vcf"
+    output:
+        filtered_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilter.vcf"
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        gatk VariantFiltration \
+            -R {input.ref} \
+            -V {input.biallelic_vcf} \
+            --filter-expression "QD < 2.0" --filter-name "QD2" \
+            --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
+            --filter-expression "SOR > 3.0" --filter-name "SOR3" \
+            --filter-expression "FS > 60.0" --filter-name "FS60" \
+            --filter-expression "MQ < 40.0" --filter-name "MQ40" \
+            --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
+            -O {output.filtered_vcf}
+        """
+
+# extract passed variants
+rule extract_passed_variants:
+    input:
+        filtered_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilter.vcf"
+    output:
+        filtered_passed_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilterPASSED.vcf"
+    shell:
+        """
+        grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
+        """
+
+# rule to filter invariants:
+rule filter_invariants:
+    input:
+        ref=f"{ref_dir}/{ref}",
+        invcf=f"{data_dir}/til_caes_invariant_geno_called.vcf"
+    output:
+        filtered_invcf=f"{data_dir}/til_caes_invariant_invariant_qualfilter.vcf"
+    shell:
+        """
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        gatk VariantFiltration \
+            -R {input.ref} \
+            -V {input.invcf} \
+            --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
+            --filter-expression "MQ < 40.0" --filter-name "MQ40" \
+            --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+            --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
+            -O {output.filtered_invcf}
+        """
+
+# extract passed invariants
+rule extract_passed_variants:
+    input:
+        filtered_invcf=f"{data_dir}/til_caes_invariant_qualfilter.vcf"
+    output:
+        filtered_passed_invcf=f"{data_dir}/til_caes_invariant_invariant_qualfilterPASSED.vcf"
+    shell:
+        """
+        grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
+        """
+
+
+
+
+
 
 
 
