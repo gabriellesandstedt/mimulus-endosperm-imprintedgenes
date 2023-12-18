@@ -148,7 +148,53 @@ rule qualimap:
 #mean coverageData = 7.1196X
 #std coverageData = 59.5332X
 
+#SRR12424421
+# number of mapped reads = 16,115,616 (100%)
+# mean coverageData = 6.8621X
+# std coverageData = 88.0176X
 
+#SRR12424412 
+#number of mapped reads = 16,303,298
+#mean coverageData = 7.0653X
+# std coverageData = 64.4697X
+
+#SRR12424417
+#number of mapped reads = 14,794,024
+#mean coverageData = 6.4055X
+#std coverageData = 57.9565X
+
+##SRR12424422
+#number of mapped reads = 15,100,430
+#mean coverageData = 6.4278X
+#std coverageData = 78.7005X
+
+##SRR12424411
+#number of mapped reads = 13,630,578
+# mean coverageData = 5.9412X
+# std coverageData = 30.9212X
+
+
+##SRR12424419
+#number of reads = 12,709,634
+#mean coverageData = 5.3877X
+#std coverageData = 66.0901X
+
+##SRR12424423
+#number of mapped reads = 13,354,942
+#mean coverageData = 5.5916X
+#std coverageData = 65.5703X
+
+##SRR12424413
+#number ofmapped reads = 12,664,102 
+#mean coverageData = 5.3995X
+#std coverageData = 64.2996X
+
+#SRR12424418
+#number of mapped reads = 12,501,268 
+#mean coverageData = 5.3377X
+#std coverageData = 58.9155X
+
+#SRR3103524
 
 
 
