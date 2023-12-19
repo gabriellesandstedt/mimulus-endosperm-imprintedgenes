@@ -170,7 +170,7 @@ rule split_vcf:
 # split invariant vcf for individual depth filtering
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_invar.vcf", sample=samples)
 
 rule split_vcf:
     input:
