@@ -146,19 +146,43 @@ rule extract_passed_invariants:
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
         """
 
+samples = ["UTC1", "UTC2", "GAB1", "GAB2", "ICE10", "KCK1", "LVR", "PAG2", "SAB1", "SAB19", "SOP12", "TWN36"]
+
+# split snp vcf for individual depth filtering
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps.vcf", sample=["UTC1","UTC2","GAB1", "GAB2", "ICE10", "KCK1", "LVR", "PAG2", "SAB1", "SAB19", "SOP12", "TWN36"])
+        expand(f"{data_dir}/{{sample}}_snps.vcf", sample=samples)
+
 rule split_vcf:
     input:
-        nohet_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilterPASSED.vcf"
+        snp_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilterPASSED.vcf"
     output:
-        vcf=f"{data_dir}/{{sample}}_snps.vcf",
+        ind_vcf=f"{data_dir}/{{sample}}_snps.vcf",
+    params:
+        sample=lambda wildcards: wildcards.sample
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
-        vcftools --remove-indv {wildcards.sample} --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.vcf}
+        vcftools --indv {params.sample} --vcf {input.snp_vcf} --recode --recode-INFO-all --out {output.ind_vcf}
         """
 
+
+# split invariant vcf for individual depth filtering
+rule all:
+    input:
+        expand(f"{data_dir}/{{sample}}_snps.vcf", sample=samples)
+
+rule split_vcf:
+    input:
+        invar_vcf=f"{data_dir}/til_caes_invariant_qualfilterPASSED.vcf"
+    output:
+        ind_vcf=f"{data_dir}/{{sample}}_invar.vcf",
+    params:
+        sample=lambda wildcards: wildcards.sample
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools --indv {params.sample} --vcf {input.invar_vcf} --recode --recode-INFO-all --out {output.ind_vcf}
+        """
 
 
