@@ -146,7 +146,7 @@ rule extract_passed_invariants:
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
         """
 
-samples = ["UTC1", "UTC2", "GAB1", "GAB2", "ICE10", "KCK1", "LVR", "PAG2", "SAB1", "SAB19", "SOP12", "TWN36"]
+samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424416", "SRR12424417", "SRR12424418", "SRR12424419", "SRR12424421", "SRR12424422", "SRR12424423", "SRR3103524"]
 
 # split snp vcf for individual depth filtering
 rule all:
