@@ -146,13 +146,19 @@ rule extract_passed_invariants:
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
         """
 
-
-
-
-
-
-
-
+rule all:
+    input:
+        expand(f"{data_dir}/{{sample}}_snps.vcf", sample=["UTC1","UTC2","GAB1", "GAB2", "ICE10", "KCK1", "LVR", "PAG2", "SAB1", "SAB19", "SOP12", "TWN36"])
+rule split_vcf:
+    input:
+        nohet_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilterPASSED.vcf"
+    output:
+        vcf=f"{data_dir}/{{sample}}_snps.vcf",
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools --remove-indv {wildcards.sample} --vcf {input.nohet_vcf} --recode --recode-INFO-all --out {output.vcf}
+        """
 
 
 
