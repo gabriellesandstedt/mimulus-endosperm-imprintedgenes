@@ -129,7 +129,6 @@ rule filter_invariants:
         gatk VariantFiltration \
             -R {input.ref} \
             -V {input.invcf} \
-            --filter-expression "QUAL < 30.0" --filter-name "QUAL30" \
             --filter-expression "MQ < 40.0" --filter-name "MQ40" \
             --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
             --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" \
