@@ -164,6 +164,7 @@ rule split_vcf:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
         vcftools --indv {params.sample} --vcf {input.snp_vcf} --recode --recode-INFO-all --out {output.ind_vcf}
+        mv {output.ind_vcf}.recode.vcf {output.ind_vcf}
         """
 
 
@@ -183,6 +184,9 @@ rule split_vcf:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
         vcftools --indv {params.sample} --vcf {input.invar_vcf} --recode --recode-INFO-all --out {output.ind_vcf}
+        mv {output.ind_vcf}.recode.vcf {output.ind_vcf}
         """
 
+samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424416", "SRR12424417", "SRR12424418", "SRR12424419", "SRR12424421", "SRR12424422", "SRR12424423", "SRR3103524"]
+maxDP = ["128","68","138","136","214","123", "124", "140", "185", "165", "138","673"]
 
