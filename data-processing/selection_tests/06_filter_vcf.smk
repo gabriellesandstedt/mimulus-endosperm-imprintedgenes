@@ -225,7 +225,7 @@ rule filt_dp_snp_samples:
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
-        vcftools --vcf {input.ind_invar_vcf} --maxDP {params.maxDP} --minDP 10 --recode --recode-INFO-all --out {output.dp_vcf}
+        vcftools --vcf {input.ind_invar_vcf} --maxDP {params.maxDP} --minDP 2 --recode --recode-INFO-all --out {output.dp_vcf}
         mv {output.dp_vcf}.recode.vcf {output.dp_vcf}
         """
 
