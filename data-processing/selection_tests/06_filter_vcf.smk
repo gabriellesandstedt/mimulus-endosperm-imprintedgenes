@@ -249,7 +249,7 @@ rule vcf_to_gzvcf_snpfiles:
         module load  HTSlib/1.18-GCC-12.2.0
         bgzip {input.ind_dp_vcf}
         tabix -p vcf {output.ind_dp_gzvcf}
-        cp {output.ind_dp_gzvcf_tbi} ..
+        cp {output.ind_dp_gzvcf_tbi} {data_dir}/misc
         """
 
 # zip invariant files
@@ -257,7 +257,6 @@ rule all:
     input:
         expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz", sample=samples),
         expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz.tbi", sample=samples)
-
 rule vcf_to_gzvcf_invarfiles:
     input:
         ind_dp_vcf=f"{data_dir}/{{sample}}_invar_dp.vcf",
@@ -266,9 +265,9 @@ rule vcf_to_gzvcf_invarfiles:
         ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_dp.vcf.gz.tbi",
     shell:
         """
-        module load  HTSlib/1.18-GCC-12.2.0
+        module load HTSlib/1.18-GCC-12.2.0
         bgzip {input.ind_dp_vcf}
         tabix -p vcf {output.ind_dp_gzvcf}
-        cp {output.ind_dp_gzvcf_tbi} ..
+        cp {output.ind_dp_gzvcf_tbi} {data_dir}/misc
         """
 
