@@ -249,7 +249,7 @@ rule vcf_to_gzvcf_snpfiles:
         module load  HTSlib/1.18-GCC-12.2.0
         bgzip {input.ind_dp_vcf}
         tabix -p vcf {output.ind_dp_gzvcf}
-        cp {output.ind_dp_gzvcf_tbi} .
+        cp {output.ind_dp_gzvcf_tbi} ..
         """
 
 # zip invariant files
@@ -269,6 +269,6 @@ rule vcf_to_gzvcf_invarfiles:
         module load  HTSlib/1.18-GCC-12.2.0
         bgzip {input.ind_dp_vcf}
         tabix -p vcf {output.ind_dp_gzvcf}
-        cp {output.ind_dp_gzvcf_tbi} .
+        cp {output.ind_dp_gzvcf_tbi} ..
         """
 
