@@ -188,5 +188,45 @@ rule split_vcf:
         """
 
 samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424416", "SRR12424417", "SRR12424418", "SRR12424419", "SRR12424421", "SRR12424422", "SRR12424423", "SRR3103524"]
-maxDP = ["128","68","138","136","214","123", "124", "140", "185", "165", "138","673"]
+maxDP = ["127","68","137","134","213","123", "124", "138", "183", "164", "137","671"]
+
+# filter for individual depth of snp files
+rule all:
+    input:
+        expand(f"{data_dir}/{{sample}}_snps_dp.vcf", sample=samples)
+
+rule filt_dp_snp_samples:
+    input:
+        ind_snp_vcf=f"{data_dir}/{{sample}}_snps.vcf"
+    output:
+        dp_vcf=f"{data_dir}/{{sample}}_snps_dp.vcf"
+    params:
+        maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools --vcf {input.ind_snp_vcf} --maxDP {params.maxDP} --minDP 10 --recode --recode-INFO-all --out {output.dp_vcf}
+        mv {output.dp_vcf}.recode.vcf {output.dp_vcf}
+        """
+
+
+# filter for individual depth of invariant files
+rule all:
+    input:
+        expand(f"{data_dir}/{{sample}}_invar_dp.vcf", sample=samples)
+
+rule filt_dp_snp_samples:
+    input:
+        ind_invar_vcf=f"{data_dir}/{{sample}}_invar.vcf"
+    output:
+        dp_vcf=f"{data_dir}/{{sample}}_invar_dp.vcf"
+    params:
+        maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools --vcf {input.ind_invar_vcf} --maxDP {params.maxDP} --minDP 10 --recode --recode-INFO-all --out {output.dp_vcf}
+        mv {output.dp_vcf}.recode.vcf {output.dp_vcf}
+        """
+
 
