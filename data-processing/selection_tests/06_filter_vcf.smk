@@ -230,3 +230,45 @@ rule filt_dp_snp_samples:
         """
 
 
+samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424416", "SRR12424417", "SRR12424418", "SRR12424419", "SRR12424421", "SRR12424422", "SRR12424423", "SRR3103524"]
+
+# zip snp files
+rule all:
+    input:
+        expand(f"{data_dir}/{{sample}}_snps_dp.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_snps_dp.vcf.gz.tbi", sample=samples)
+
+rule vcf_to_gzvcf_snpfiles:
+    input:
+        ind_dp_vcf=f"{data_dir}/{{sample}}_snps_dp.vcf",
+    output:
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_snps_dp.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_snps_dp.vcf.gz.tbi",
+    shell:
+        """
+        module load  HTSlib/1.18-GCC-12.2.0
+        bgzip {input.ind_dp_vcf}
+        tabix -p vcf {output.ind_dp_gzvcf}
+        cp {output.ind_dp_gzvcf_tbi} .
+        """
+
+# zip invariant files
+rule all:
+    input:
+        expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz.tbi", sample=samples)
+
+rule vcf_to_gzvcf_invarfiles:
+    input:
+        ind_dp_vcf=f"{data_dir}/{{sample}}_invar_dp.vcf",
+    output:
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_dp.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_dp.vcf.gz.tbi",
+    shell:
+        """
+        module load  HTSlib/1.18-GCC-12.2.0
+        bgzip {input.ind_dp_vcf}
+        tabix -p vcf {output.ind_dp_gzvcf}
+        cp {output.ind_dp_gzvcf_tbi} .
+        """
+
