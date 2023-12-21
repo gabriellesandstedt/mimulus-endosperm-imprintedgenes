@@ -271,3 +271,23 @@ rule vcf_to_gzvcf_invarfiles:
         cp {output.ind_dp_gzvcf_tbi} {data_dir}/misc
         """
 
+rule all:
+    input:
+        f"{data_dir}/til_caes_snps_filtered_dp.vcf",
+        f"{data_dir}/til_caes_invar_filtered_dp.vcf"
+
+rule merge_vcfs:
+    input:
+        snps = expand(f"{data_dir}/{{sample}}_snps_dp.vcf.gz", sample=samples),
+        invar = expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz", sample=samples)
+    output:
+        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_dp.vcf",
+        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf"
+    shell:
+        """
+        module load  BCFtools/1.15.1-GCC-11.3.0
+        bcftools merge {input.snps}  > {output.snps_merged_vcf}
+        bcftools merge {input.invar}  > {output.invar_merged_vcf}
+        """
+
+rule filt_hets
