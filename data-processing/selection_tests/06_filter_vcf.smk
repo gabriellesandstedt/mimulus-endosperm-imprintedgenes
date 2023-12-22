@@ -290,4 +290,63 @@ rule merge_vcfs:
         bcftools merge {input.invar}  > {output.invar_merged_vcf}
         """
 
+# insert rule that removes hets that do not meet the 25-75 balance ratio
 rule filt_hets
+
+#filter for minor allele count
+rule mac_filter:
+    input:
+        filtered_hets_gzvcf=f"{data_dir}/til_caes_snps_filtered_dp_hets.vcf.gz",
+        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets.vcf"
+    output:
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf"
+    shell:
+        """
+        gunzip {input.filtered_hets_gzvcf}
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools \
+            --vcf {input.filtered_hets_vcf} \
+            --remove-indels \
+            --min-alleles 2 \
+            --max-alleles 2 \
+            --mac 2 \
+            --recode \
+            --recode-INFO-all \
+            --out {output.filtered_mac_vcf}
+         mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
+        """
+
+# bgzip and tabix files
+rule vcf_to_gzvcf:
+    input:
+        var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf",
+        invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf"
+    output:
+        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf.gz.tbi",
+        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz",
+        tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz.tbi"
+    shell:
+        """
+        module load HTSlib/1.18-GCC-12.2.0
+        bgzip {input.invar_vcf}
+        bgzip {input.var_vcf}
+        tabix -p vcf {output.gz_invar_vcf}
+        tabix -p vcf {output.gz_var_vcf}
+        """
+
+rule combine_vcfs:
+    input:
+       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf.gz",
+       gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz"
+    output:
+       final_vcf=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz",
+       tabix_final=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz.tbi"
+    shell:
+        """
+        module load HTSlib/1.18-GCC-12.2.0
+        module load BCFtools/1.15.1-GCC-11.3.0
+        bcftools concat {input.gz_var_vcf} {input.gz_invar_vcf} -a -Oz -o {output.final_vcf}
+        tabix -p vcf {output.final_vcf}
+        """  
+
