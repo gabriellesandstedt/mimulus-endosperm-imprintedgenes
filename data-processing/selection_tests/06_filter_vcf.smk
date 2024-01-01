@@ -299,7 +299,7 @@ rule mac_filter:
         filtered_hets_gzvcf=f"{data_dir}/til_caes_snps_filtered_dp_hets.vcf.gz",
         filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf"
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf"
     shell:
         """
         gunzip {input.filtered_hets_gzvcf}
@@ -309,6 +309,7 @@ rule mac_filter:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
+            --max-missing-count 6 \
             --mac 2 \
             --recode \
             --recode-INFO-all \
@@ -319,11 +320,11 @@ rule mac_filter:
 # bgzip and tabix files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf",
+        var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf",
         invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf.gz.tbi",
+        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf.gz.tbi",
         gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz",
         tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz.tbi"
     shell:
@@ -337,11 +338,11 @@ rule vcf_to_gzvcf:
 
 rule combine_vcfs:
     input:
-       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac.vcf.gz",
+       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf.gz",
        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz"
     output:
-       final_vcf=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz",
-       tabix_final=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz.tbi"
+       final_vcf=f"{data_dir}/til_caes_allsamples_allsites_mm_final.vcf.gz",
+       tabix_final=f"{data_dir}/til_caes_allsamples_allsites_mm_final.vcf.gz.tbi"
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
