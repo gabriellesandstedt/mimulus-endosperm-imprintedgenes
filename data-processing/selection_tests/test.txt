@@ -18,4 +18,9 @@ bcftools view -e 'ALT="*"' -O v -o filtered.vcf til_caes_snps_filtered_dp_hets_m
 # bgzip and tabix the vcf file prior to running 
 python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/my.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.fa -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output  -d 'G'
 
-python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/my.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.fa -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output  -d 'G'
+# replaced all mitil with chr in gtf 
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK  -x 4 
+
+
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK  -x 4 
+
