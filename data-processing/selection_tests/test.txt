@@ -1,0 +1,11 @@
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/MtilingiivarLVRv1.1.primaryTrs.gff3 -g /scratch/gds44474/MIMULUS/selection_tests/data/MtilingiivarLVRv1.1.primaryTrs.fa -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hets_mac_maxmissing_re.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output -d "."
+
+
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/MtilingiivarLVRv1.1.primaryTrs.fa -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hets_mac_maxmissing_re.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output 
+
+
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/my.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.fa -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hets_mac_maxmissing_re.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output  -d 'G'
+
+
+### there were a handful of snps that had * in the ALT column, remove those
+bcftools view -e 'ALT="*"' -O v -o filtered.vcf til_caes_snps_filtered_dp_hets_mac_maxmissing_re.vcf.gz
