@@ -7,6 +7,7 @@ python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.gtf -
 # replace mitil. with chr_ in the genome file
 
 sed 's/Mitil./Chr_/g'  MtilingiivarLVRv1.1.primaryTrs.fa  > new.trns.fa
+sed 's/Chr_/Mitil./g'  mk.tsv  > mk_re.tsv
 
 python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/my.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.fa -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hets_mac_maxmissing_re.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output  -d 'G'
 
@@ -23,4 +24,10 @@ python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.
 
 
 python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK  -x 4 
+
+
+
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup_til.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_caes_focal  -x 4 
+
+
 
