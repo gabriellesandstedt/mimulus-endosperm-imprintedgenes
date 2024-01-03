@@ -13,7 +13,7 @@ python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/my.gtf -g
 
 
 ### there were a handful of snps that had * in the ALT column, remove those
-bcftools view -e 'ALT="*"' -O v -o filtered.vcf til_caes_snps_filtered_dp_hets_mac_maxmissing_re.vcf.gz
+bcftools view -e 'ALT="*"' -O v -o comb_samps_filt_mac_maxmissing_nodel.vcf comb_samps_filt_mac_maxmissing.vcf.gz
 
 
 # bgzip and tabix the vcf file prior to running 
@@ -30,7 +30,7 @@ python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.
 python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup_til.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_caes_focal_nofixedin  -x 4 --no-fixed-in
 
 
-python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/MtilingiivarLVRv1.1.gene.gff3 -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_diffgff  -x 4 
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/comb_samps_filt_mac_maxmissing_nodel.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/output.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_newvcf
 
 
 
@@ -108,14 +108,12 @@ rule combine_vcfs:
        gz_var_vcf=f"{data_dir}/til_filt_mac_maxmissing.vcf.gz",
        gz_invar_vcf=f"{data_dir}/caes_filt_mac_maxmissing.vcf.gz"
     output:
-       final_vcf=f"{data_dir}/comb_samps_filt_mac_maxmissing.vcf.gz",
-       tabix_final=f"{data_dir}/comb_samps_filt_mac_maxmissing.vcf.gz.tbi"
+       final_vcf=f"{data_dir}/comb_samps_filt_mac_maxmissing.vcf"
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
         module load BCFtools/1.15.1-GCC-11.3.0
         bcftools merge {input.gz_var_vcf} {input.gz_invar_vcf} > {output.final_vcf}
-        tabix -p vcf {output.final_vcf}
         """  
 
 
