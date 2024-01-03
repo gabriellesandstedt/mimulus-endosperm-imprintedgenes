@@ -27,7 +27,97 @@ python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.
 
 
 
-python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup_til.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_caes_focal  -x 4 
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup_til.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_caes_focal_nofixedin  -x 4 --no-fixed-in
+
+
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/MtilingiivarLVRv1.1.gene.gff3 -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_diffgff  -x 4 
+
+
+
+bcftools filter -e 'INFO/AF[*] > 0 && (SAMPLE="PAG2" || SAMPLE="KCK1" || SAMPLE="UTC2" || SAMPLE="UCT1" || SAMPLE="TWN32" || SAMPLE="GAB1" || SAMPLE="GAB2")' filtered.vcf.gz | bcftools annotate -Oz -x INFO/AF -o caes_miss_filtered.vcf.gz
+
+
+bcftools view -s PAG2,KCK1,UTC2,UCT1,TWN36,GAB1,GAB2 filtered.vcf.gz | bcftools +setGT -Oz -o caes_miss_filtered.vcf.gz
+
+
+bcftools view -s PAG2,KCK1,UTC2,UCT1,TWN36,GAB1,GAB2 filtered.vcf.gz | bcftools +setGT -- -t ^1/1 -t ^1|1 -Oz -o caes_miss_filtered.vcf.gz
+
+
+bcftools view -s PAG2,KCK1,UTC2,UCT1,TWN36,GAB1,GAB2 filtered.vcf.gz | \
+bcftools filter -e 'GT="1/1" || GT="1|1"' | \
+bcftools view -i 'COUNT(GT="1/1" || GT="1|1") != 7' -Oz -o caes_miss_filtered.vcf.gz
+
+
+bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes_snps_filtered_dp_hets.vcf -o til_caes_snps_filtered_dp_hets_re.vcf
+
+
+bcftools view -s PAG2,KCK1,UTC2,UCT1,TWN36,GAB1,GAB2 -O v -o caes_filt.vcf til_caes_snps_filtered_dp_hets_re.vcf
+
+
+rule mac_filter:
+    input:
+        filtered_hets_vcf=f"{data_dir}/caes_filt.vcf"
+    output:
+        filtered_mac_vcf=f"{data_dir}/caes_filt_mac_maxmissing.vcf"
+    shell:
+        """
+        gunzip {input.filtered_hets_gzvcf}
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools \
+            --vcf {input.filtered_hets_vcf} \
+            --remove-indels \
+            --min-alleles 2 \
+            --max-alleles 2 \
+            --max-missing-count 6 \
+            --mac 2 \
+            --recode \
+            --recode-INFO-all \
+            --out {output.filtered_mac_vcf}
+         mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
+        """
+
+
+
+bcftools view -s SOP12,SAB1,SAB19,ICE10,LVR -O v -o til_filt.vcf til_caes_snps_filtered_dp_hets_re.vcf
+
+rule mac_filter:
+    input:
+        filtered_hets_vcf=f"{data_dir}/til_filt.vcf"
+    output:
+        filtered_mac_vcf=f"{data_dir}/til_filt_mac_maxmissing.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools \
+            --vcf {input.filtered_hets_vcf} \
+            --remove-indels \
+            --min-alleles 2 \
+            --max-alleles 2 \
+            --max-missing-count 1 \
+            --mac 2 \
+            --recode \
+            --recode-INFO-all \
+            --out {output.filtered_mac_vcf}
+         mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
+        """
+
+
+
+rule combine_vcfs:
+    input:
+       gz_var_vcf=f"{data_dir}/til_filt_mac_maxmissing.vcf.gz",
+       gz_invar_vcf=f"{data_dir}/caes_filt_mac_maxmissing.vcf.gz"
+    output:
+       final_vcf=f"{data_dir}/comb_samps_filt_mac_maxmissing.vcf.gz",
+       tabix_final=f"{data_dir}/comb_samps_filt_mac_maxmissing.vcf.gz.tbi"
+    shell:
+        """
+        module load HTSlib/1.18-GCC-12.2.0
+        module load BCFtools/1.15.1-GCC-11.3.0
+        bcftools merge {input.gz_var_vcf} {input.gz_invar_vcf} > {output.final_vcf}
+        tabix -p vcf {output.final_vcf}
+        """  
+
 
 
 
