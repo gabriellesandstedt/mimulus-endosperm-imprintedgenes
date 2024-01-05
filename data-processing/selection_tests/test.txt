@@ -23,7 +23,7 @@ python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/my.gtf -g
 python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK  -x 4 
 
 
-python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/filtered.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK  -x 4 
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/output.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK  -x 4 --overwrite
 
 
 
@@ -48,7 +48,7 @@ bcftools filter -e 'GT="1/1" || GT="1|1"' | \
 bcftools view -i 'COUNT(GT="1/1" || GT="1|1") != 7' -Oz -o caes_miss_filtered.vcf.gz
 
 
-bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes_snps_filtered_dp_hets.vcf -o til_caes_snps_filtered_dp_hets_re.vcf
+bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf.gz -o til_caes_snps_filtered_dp_hetpy_mac_nodel_re.vcf
 
 
 bcftools view -s PAG2,KCK1,UTC2,UCT1,TWN36,GAB1,GAB2 -O v -o caes_filt.vcf til_caes_snps_filtered_dp_hets_re.vcf
@@ -61,15 +61,14 @@ rule mac_filter:
         filtered_mac_vcf=f"{data_dir}/caes_filt_mac_maxmissing.vcf"
     shell:
         """
-        gunzip {input.filtered_hets_gzvcf}
         module load VCFtools/0.1.16-GCC-11.2.0
         vcftools \
             --vcf {input.filtered_hets_vcf} \
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --max-missing-count 6 \
-            --mac 2 \
+            --max-missing-count 1 \
+            --mac 1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -93,8 +92,8 @@ rule mac_filter:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --max-missing-count 1 \
-            --mac 2 \
+            --max-missing-count 3 \
+            --mac 1 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -116,6 +115,11 @@ rule combine_vcfs:
         bcftools merge {input.gz_var_vcf} {input.gz_invar_vcf} > {output.final_vcf}
         """  
 
+
+
+
+
+python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/output.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK -maf 0.2 -x 4 --overwrite
 
 
 
