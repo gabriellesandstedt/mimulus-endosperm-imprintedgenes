@@ -356,28 +356,31 @@ if __name__ == "__main__":
 
 
 #filter for minor allele count
+# --max-missing-count 6 \
+# --mac 2 \
 rule mac_filter:
     input:
-        filtered_hets_gzvcf=f"{data_dir}/til_caes_snps_filtered_dp_hets.vcf.gz",
-        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets.vcf"
+        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf"
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac.vcf"
     shell:
         """
-        gunzip {input.filtered_hets_gzvcf}
         module load VCFtools/0.1.16-GCC-11.2.0
         vcftools \
             --vcf {input.filtered_hets_vcf} \
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --max-missing-count 6 \
-            --mac 2 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
          mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
         """
+
+
+ml BCFtools/1.15.1-GCC-11.3.0
+bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf til_caes_snps_filtered_dp_hetpy_mac.vcf
+
 
 # bgzip and tabix files
 rule vcf_to_gzvcf:
