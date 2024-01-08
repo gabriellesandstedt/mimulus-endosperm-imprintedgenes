@@ -81,7 +81,7 @@ awk 'NR==FNR{a[$1]; next} $1 in a' shared_MEGs.txt mk_re.tsv   > mk_shared_MEGs.
 python degenotate.py -a /scratch/gds44474/MIMULUS/selection_tests/data/new.trns.gtf -g /scratch/gds44474/MIMULUS/selection_tests/data/Mimulus_tilingii_var_LVR.mainGenome.fasta  -v /scratch/gds44474/MIMULUS/selection_tests/data/til_caes_snps_filtered_dp_hetpy_mac_nodel_re.vcf.gz -u /scratch/gds44474/MIMULUS/selection_tests/data/outgroup_til.txt -o /scratch/gds44474/MIMULUS/selection_tests/data/degenotate/output_MK_caesfocal -maf 0.2 -x 4 --overwrite --no-fixed-in
 
 
-while read -r chr pos rest; do     bcftools view -r "${chr}:${pos}-${pos}" til_caes_allsamples_allsites_mm_final.vcf.gz | grep -v '^#' >> output.vcf; done < four_fold_degen_pos.txt
+while read -r chr pos rest; do     bcftools view -r "${chr}:${pos}-${pos}" til_caes_allsamples_allsites_mm_final.vcf.gz | grep -v '^#' >> fourfold_final.vcf; done < four_fold_degen_pos.txt
 
 
 
