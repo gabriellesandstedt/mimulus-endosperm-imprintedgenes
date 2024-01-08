@@ -362,7 +362,7 @@ rule mac_filter:
     input:
         filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac.vcf"
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_biallel.vcf"
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
@@ -382,14 +382,37 @@ ml BCFtools/1.15.1-GCC-11.3.0
 bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf til_caes_snps_filtered_dp_hetpy_mac.vcf
 
 
+#filter for minor allele count and max mising (9/12 samples with a genotype present)
+rule mac_filter:
+    input:
+        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf"
+    output:
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools \
+            --vcf {input.filtered_hets_vcf} \
+            --remove-indels \
+            --min-alleles 2 \
+            --max-alleles 2 \
+            --max-missing-count 3 \
+            --mac 2 \
+            --recode \
+            --recode-INFO-all \
+            --out {output.filtered_mac_vcf}
+         mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
+        """
+
+
 # bgzip and tabix files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf",
+        var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf",
         invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf.gz.tbi",
+        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf.gz.tbi",
         gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz",
         tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz.tbi"
     shell:
@@ -403,7 +426,7 @@ rule vcf_to_gzvcf:
 
 rule combine_vcfs:
     input:
-       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hets_mac_maxmissing.vcf.gz",
+       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf.gz",
        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz"
     output:
        final_vcf=f"{data_dir}/til_caes_allsamples_allsites_mm_final.vcf.gz",
