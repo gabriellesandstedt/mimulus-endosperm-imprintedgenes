@@ -397,7 +397,7 @@ rule mac_filter:
             --min-alleles 2 \
             --max-alleles 2 \
             --max-missing-count 3 \
-            --mac 2 \
+            --mac 4 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
