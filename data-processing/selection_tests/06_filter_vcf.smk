@@ -193,19 +193,19 @@ maxDP = ["127","68","137","134","213","123", "124", "138", "183", "164", "137","
 # filter for individual depth of snp files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps_dp.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf", sample=samples)
 
 rule filt_dp_snp_samples:
     input:
         ind_snp_vcf=f"{data_dir}/{{sample}}_snps.vcf"
     output:
-        dp_vcf=f"{data_dir}/{{sample}}_snps_dp.vcf"
+        dp_vcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf"
     params:
         maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
-        vcftools --vcf {input.ind_snp_vcf} --maxDP {params.maxDP} --minDP 10 --recode --recode-INFO-all --out {output.dp_vcf}
+        vcftools --vcf {input.ind_snp_vcf} --maxDP {params.maxDP} --minDP 5 --recode --recode-INFO-all --out {output.dp_vcf}
         mv {output.dp_vcf}.recode.vcf {output.dp_vcf}
         """
 
@@ -219,13 +219,13 @@ rule filt_dp_snp_samples:
     input:
         ind_invar_vcf=f"{data_dir}/{{sample}}_invar.vcf"
     output:
-        dp_vcf=f"{data_dir}/{{sample}}_invar_dp.vcf"
+        dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf"
     params:
         maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
-        vcftools --vcf {input.ind_invar_vcf} --maxDP {params.maxDP} --minDP 2 --recode --recode-INFO-all --out {output.dp_vcf}
+        vcftools --vcf {input.ind_invar_vcf} --maxDP {params.maxDP} --minDP 5 --recode --recode-INFO-all --out {output.dp_vcf}
         mv {output.dp_vcf}.recode.vcf {output.dp_vcf}
         """
 
@@ -235,15 +235,15 @@ samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424
 # zip snp files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps_dp.vcf.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_snps_dp.vcf.gz.tbi", sample=samples)
+        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz.tbi", sample=samples)
 
 rule vcf_to_gzvcf_snpfiles:
     input:
-        ind_dp_vcf=f"{data_dir}/{{sample}}_snps_dp.vcf",
+        ind_dp_vcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf",
     output:
-        ind_dp_gzvcf=f"{data_dir}/{{sample}}_snps_dp.vcf.gz",
-        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_snps_dp.vcf.gz.tbi",
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz.tbi",
     shell:
         """
         module load  HTSlib/1.18-GCC-12.2.0
@@ -255,14 +255,14 @@ rule vcf_to_gzvcf_snpfiles:
 # zip invariant files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz.tbi", sample=samples)
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi", sample=samples)
 rule vcf_to_gzvcf_invarfiles:
     input:
         ind_dp_vcf=f"{data_dir}/{{sample}}_invar_dp.vcf",
     output:
-        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_dp.vcf.gz",
-        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_dp.vcf.gz.tbi",
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi",
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
@@ -273,16 +273,16 @@ rule vcf_to_gzvcf_invarfiles:
 
 rule all:
     input:
-        f"{data_dir}/til_caes_snps_filtered_dp.vcf",
-        f"{data_dir}/til_caes_invar_filtered_dp.vcf"
+        f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
+        f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
 
 rule merge_vcfs:
     input:
         snps = expand(f"{data_dir}/{{sample}}_snps_dp.vcf.gz", sample=samples),
         invar = expand(f"{data_dir}/{{sample}}_invar_dp.vcf.gz", sample=samples)
     output:
-        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_dp.vcf",
-        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf"
+        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
+        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
     shell:
         """
         module load  BCFtools/1.15.1-GCC-11.3.0
@@ -352,6 +352,41 @@ if __name__ == "__main__":
     process_vcf(input_file, output_file)
     print(f"Genotype filtering completed. Output written to {output_file}")
 
+
+
+# randomly select allele for heterozygous 
+import random
+import vcf
+
+def randomly_homogenize_genotype(genotype):
+    alleles = genotype.split('/')
+    if len(alleles) == 2:  # For genotypes in the form 0/1
+        random.shuffle(alleles)
+        return '/'.join(alleles)
+    elif len(alleles) == 2 and '|' in genotype:  # For genotypes in the form 0|1
+        random.shuffle(alleles)
+        return '|'.join(alleles)
+    else:
+        return genotype  # For homozygous genotypes, leave unchanged
+
+def modify_vcf(input_vcf, output_vcf):
+    vcf_reader = vcf.Reader(open(input_vcf, 'r'))
+    vcf_writer = vcf.Writer(open(output_vcf, 'w'), vcf_reader)
+
+    for record in vcf_reader:
+        for sample in record.samples:
+            original_genotype = str(sample['GT'])
+            modified_genotype = randomly_homogenize_genotype(original_genotype)
+            sample['GT'] = vcf.model._Call(record, sample.sample, modified_genotype)
+
+        vcf_writer.write_record(record)
+
+    vcf_writer.close()
+
+# Example usage:
+input_vcf_file = 'your_input.vcf'
+output_vcf_file = 'your_output.vcf'
+modify_vcf(input_vcf_file, output_vcf_file)
 
 
 
