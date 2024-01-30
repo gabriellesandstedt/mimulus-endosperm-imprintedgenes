@@ -431,7 +431,28 @@ rule mac_filter:
             --remove-indels \
             --min-alleles 2 \
             --max-alleles 2 \
-            --max-missing-count 3 \
+            --max-missing-count 9 \
+            --mac 4 \
+            --recode \
+            --recode-INFO-all \
+            --out {output.filtered_mac_vcf}
+         mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
+        """
+
+rule filter_inv:
+    input:
+        filtered_invcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel.vcf"
+    output:
+        filtered_mac_invcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf"
+    shell:
+        """
+        module load VCFtools/0.1.16-GCC-11.2.0
+        vcftools \
+            --vcf {input.filtered_hets_vcf} \
+            --remove-indels \
+            --min-alleles 2 \
+            --max-alleles 2 \
+            --max-missing-count 9 \
             --mac 4 \
             --recode \
             --recode-INFO-all \
