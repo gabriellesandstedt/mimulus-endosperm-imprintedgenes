@@ -90,4 +90,15 @@ while read -r chr pos rest; do     bcftools view -r "${chr}:${pos}-${pos}" til_c
 bcftools sort -o sorted_output.vcf input_file.vcf
 
 
+#extract fourfold:
+# note: til_caes_allsamples_allsites_final.vcf.gz and til_caes_final.vcf are same files
+# Store the header in a separate file
+grep "^#" til_caes_final.vcf > til_caes_final_4d.vcf
+
+# Iterate over each site and append variants to the output file
+while read -r site; do
+    bcftools view -r "$site" til_caes_allsamples_allsites_final.vcf.gz | grep -v "^#" >> til_caes_final_4d.vcf
+done < four_fold_sites_formatted.txt
+
+
 
