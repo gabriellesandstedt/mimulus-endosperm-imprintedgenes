@@ -193,19 +193,19 @@ maxDP = ["127","68","137","134","213","123", "124", "138", "183", "164", "137","
 # filter for individual depth of snp files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp10.vcf", sample=samples)
 
 rule filt_dp_snp_samples:
     input:
         ind_snp_vcf=f"{data_dir}/{{sample}}_snps.vcf"
     output:
-        dp_vcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf"
+        dp_vcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp10.vcf"
     params:
         maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
-        vcftools --vcf {input.ind_snp_vcf} --maxDP {params.maxDP} --minDP 5 --recode --recode-INFO-all --out {output.dp_vcf}
+        vcftools --vcf {input.ind_snp_vcf} --maxDP {params.maxDP} --minDP 10 --recode --recode-INFO-all --out {output.dp_vcf}
         mv {output.dp_vcf}.recode.vcf {output.dp_vcf}
         """
 
@@ -213,13 +213,13 @@ rule filt_dp_snp_samples:
 # filter for individual depth of invariant files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar_dp.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf", sample=samples)
 
 rule filt_dp_snp_samples:
     input:
         ind_invar_vcf=f"{data_dir}/{{sample}}_invar.vcf"
     output:
-        dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf"
+        dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf"
     params:
         maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
     shell:
@@ -255,14 +255,14 @@ rule vcf_to_gzvcf_snpfiles:
 # zip invariant files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi", sample=samples)
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz.tbi", sample=samples)
 rule vcf_to_gzvcf_invarfiles:
     input:
-        ind_dp_vcf=f"{data_dir}/{{sample}}_invar_dp.vcf",
+        ind_dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp10",
     output:
-        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz",
-        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi",
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz.tbi",
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
@@ -273,16 +273,16 @@ rule vcf_to_gzvcf_invarfiles:
 
 rule all:
     input:
-        f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
-        f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
+        f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10.vcf",
+        f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
 
 rule merge_vcfs:
     input:
-        snps = expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz", sample=samples),
-        invar = expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples)
+        snps = expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp10.vcf.gz", sample=samples),
+        invar = expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz", sample=samples)
     output:
-        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
-        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
+        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10.vcf",
+        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
     shell:
         """
         module load  BCFtools/1.15.1-GCC-11.3.0
@@ -394,9 +394,9 @@ modify_vcf(input_vcf_file, output_vcf_file)
 # --mac 2 \
 rule mac_filter:
     input:
-        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het.vcf"
+        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_biallel.vcf"
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel.vcf"
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
@@ -413,15 +413,15 @@ rule mac_filter:
 
 
 ml BCFtools/1.15.1-GCC-11.3.0
-bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_maxdp_mindp5_het_biallel_nodel.vcf til_caes_snps_filtered_maxdp_mindp5_het_biallel.vcf
+bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel_nodel.vcf til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel.vcf
 
 
 #filter for minor allele count and max missing (2/12 samples with a genotype present)
 rule mac_filter:
     input:
-        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_biallel_nodel.vcf"
+        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel_nodel.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_biallel_nodel_macmm.vcf"
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel_nodel_macmm.vcf"
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
@@ -441,9 +441,9 @@ rule mac_filter:
 #filter for max missing (2/12 samples with a genotype present)
 rule filter_inv:
     input:
-        filtered_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
+        filtered_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
     output:
-        filtered_mm_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf"
+        filtered_mm_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10_mm.vcf"
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
@@ -456,16 +456,17 @@ rule filter_inv:
          mv {output.filtered_mm_invcf}.recode.vcf {output.filtered_mm_invcf}
         """
 
+#no mac or mm for both inv and snp, test
 # bgzip and tabix files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_biallel_nodel_macmm.vcf",
-        invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf"
+        var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel2.vcf",
+        invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf.gz.tbi",
-        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz",
-        tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_dp.vcf.gz.tbi"
+        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel2.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel2.vcf.gz.tbi",
+        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf.gz",
+        tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf.tbi"
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
