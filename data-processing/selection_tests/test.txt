@@ -48,7 +48,7 @@ bcftools filter -e 'GT="1/1" || GT="1|1"' | \
 bcftools view -i 'COUNT(GT="1/1" || GT="1|1") != 7' -Oz -o caes_miss_filtered.vcf.gz
 
 
-bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm.vcf -o til_caes_snps_filtered_dp_hetpy_mac_nodel_mac_mm_re.vcf
+bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') sorted_til_caes_final_4d_test.vcf -o sorted_til_caes_final_4d_test_re.vcf
 
 
 rule combine_vcfs:
@@ -97,8 +97,10 @@ grep "^#" til_caes_final.vcf > til_caes_final_4d.vcf
 
 # Iterate over each site and append variants to the output file
 while read -r site; do
-    bcftools view -r "$site" til_caes_allsamples_allsites_final.vcf.gz | grep -v "^#" >> til_caes_final_4d.vcf
+    bcftools view -r "$site" til_caes_allsamples_allsites_final_mindp10_re_test.vcf.gz | grep -v "^#" >> til_caes_final_4d.vcf
 done < four_fold_sites_formatted.txt
+
+
 
 
 
