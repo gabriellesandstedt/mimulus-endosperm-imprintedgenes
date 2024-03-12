@@ -195,5 +195,6 @@ rule joint_genotype_all:
             -L {input.intervals} \
             --allow-old-rms-mapping-quality-annotation-data \
             --all-sites 
+            --output {output.all_vcf}
         """
 
