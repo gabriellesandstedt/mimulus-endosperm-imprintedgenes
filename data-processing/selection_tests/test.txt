@@ -101,6 +101,11 @@ while read -r site; do
 done < four_fold_sites_formatted.txt
 
 
+while read -r site; do
+    bcftools view -r "$site" til_caes_allsamples_allsites_nofilt_oldhead_re_nodel.vcf.gz | grep -v "^#" >> til_caes_final_im62_4d.vcf
+done < degeneracy-all-sites_4d_form.bed
+
+
 
 
 
