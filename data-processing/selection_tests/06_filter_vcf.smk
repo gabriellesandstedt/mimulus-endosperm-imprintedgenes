@@ -274,16 +274,16 @@ rule vcf_to_gzvcf_invarfiles:
 
 rule all:
     input:
-        f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10.vcf",
-        f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
+        f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
+        f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
 
 rule merge_vcfs:
     input:
-        snps = expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp10.vcf.gz", sample=samples),
-        invar = expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz", sample=samples)
+        snps = expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz", sample=samples),
+        invar = expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples)
     output:
-        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10.vcf",
-        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
+        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
+        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
     shell:
         """
         module load  BCFtools/1.15.1-GCC-11.3.0
