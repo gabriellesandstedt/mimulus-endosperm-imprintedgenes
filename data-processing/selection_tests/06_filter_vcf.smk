@@ -256,14 +256,14 @@ rule vcf_to_gzvcf_snpfiles:
 # zip invariant files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz.tbi", sample=samples)
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi", sample=samples)
 rule vcf_to_gzvcf_invarfiles:
     input:
-        ind_dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp10",
+        ind_dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf",
     output:
-        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz",
-        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_maxdp_mindp10.vcf.gz.tbi",
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi",
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
