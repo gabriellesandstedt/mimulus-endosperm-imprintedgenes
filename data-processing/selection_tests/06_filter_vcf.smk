@@ -437,13 +437,13 @@ rule filter_inv:
 # bgzip and tabix files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel2.vcf",
-        invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
+        var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf",
+        invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel2.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel2.vcf.gz.tbi",
-        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf.gz",
-        tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf.tbi"
+        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf.gz.tbi",
+        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf.gz",
+        tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf.gz.tbi"
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
@@ -455,7 +455,7 @@ rule vcf_to_gzvcf:
 
 rule combine_vcfs:
     input:
-       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_biallel_nodel_macmm.vcf.gz",
+       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf.gz",
        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf.gz"
     output:
        final_vcf=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz",
