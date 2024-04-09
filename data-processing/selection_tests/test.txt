@@ -48,7 +48,7 @@ bcftools filter -e 'GT="1/1" || GT="1|1"' | \
 bcftools view -i 'COUNT(GT="1/1" || GT="1|1") != 7' -Oz -o caes_miss_filtered.vcf.gz
 
 
-bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') sorted_til_caes_final_4d_test.vcf -o sorted_til_caes_final_4d_test_re.vcf
+bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes_allsamples_allsites_final_sort.vcf -o til_caes_allsamples_allsites_final_sort_re.vcf
 
 
 rule combine_vcfs:
@@ -102,7 +102,7 @@ done < four_fold_sites_formatted.txt
 
 
 while read -r site; do
-    bcftools view -r "$site" til_caes_allsamples_allsites_nofilt_oldhead_re_nodel.vcf.gz | grep -v "^#" >> til_caes_final_im62_4d.vcf
+    bcftools view -r "$site" til_caes_allsamples_allsites_final_sort_re.vcf.gz | grep -v "^#" >> til_caes_final_im62_4d.vcf
 done < degeneracy-all-sites_4d_form.bed
 
 
