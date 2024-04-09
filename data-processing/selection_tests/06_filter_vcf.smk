@@ -293,7 +293,7 @@ rule merge_vcfs:
 
 # insert rule that removes hets that do not meet the 25-75 balance ratio
 
-rule filt_hets
+rule filt_hets:
 
 import sys
 
@@ -389,40 +389,16 @@ output_vcf_file = 'til_caes_snps_filtered_maxdp_mindp5_het.vcf'
 modify_vcf(input_vcf_file, output_vcf_file)
 
 
-
-#filter for minor allele count
-# --max-missing-count 6 \
-# --mac 2 \
-rule mac_filter:
-    input:
-        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy.vcf"
-    output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel.vcf"
-    shell:
-        """
-        module load VCFtools/0.1.16-GCC-11.2.0
-        vcftools \
-            --vcf {input.filtered_hets_vcf} \
-            --remove-indels \
-            --min-alleles 2 \
-            --max-alleles 2 \
-            --recode \
-            --recode-INFO-all \
-            --out {output.filtered_mac_vcf}
-         mv {output.filtered_mac_vcf}.recode.vcf {output.filtered_mac_vcf}
-        """
-
-
 ml BCFtools/1.15.1-GCC-11.3.0
-bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel_nodel.vcf til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel.vcf
+bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_maxdp_mindp5_het_nodel.vcf til_caes_snps_filtered_maxdp_mindp5_het.vcf
 
 
 #filter for minor allele count and max missing (2/12 samples with a genotype present)
 rule mac_filter:
     input:
-        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel_nodel.vcf"
+        filtered_hets_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel.vcf"
     output:
-        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp10_hetpy_biallel_nodel_macmm.vcf"
+        filtered_mac_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf"
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
@@ -432,7 +408,7 @@ rule mac_filter:
             --min-alleles 2 \
             --max-alleles 2 \
             --max-missing-count 10 \
-            --mac 2 \
+            --mac 3 \
             --recode \
             --recode-INFO-all \
             --out {output.filtered_mac_vcf}
@@ -442,9 +418,9 @@ rule mac_filter:
 #filter for max missing (2/12 samples with a genotype present)
 rule filter_inv:
     input:
-        filtered_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10.vcf"
+        filtered_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
     output:
-        filtered_mm_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp10_mm.vcf"
+        filtered_mm_invcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf"
     shell:
         """
         module load VCFtools/0.1.16-GCC-11.2.0
