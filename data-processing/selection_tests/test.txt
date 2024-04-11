@@ -48,7 +48,7 @@ bcftools filter -e 'GT="1/1" || GT="1|1"' | \
 bcftools view -i 'COUNT(GT="1/1" || GT="1|1") != 7' -Oz -o caes_miss_filtered.vcf.gz
 
 
-bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes_allsamples_allsites_final_sort.vcf -o til_caes_allsamples_allsites_final_sort_re.vcf
+bcftools reheader -s <(echo -e 'SOP12\nSAB1\nSAB19\nPAG2\nKCK1\nICE10\nUTC2\nUCT1\nTWN36\nGAB2\nGAB1\nLVR') til_caes.vcf_qualfilter_PASSED_mm_test.vcf -o til_caes.vcf_qualfilter_PASSED_mm_test_re.vcf
 
 
 rule combine_vcfs:
