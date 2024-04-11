@@ -19,6 +19,11 @@ rule all:
         f"{data_dir}/til.g.vcf.gz",
         f"{data_dir}/caes.g.vcf.gz"
 
+# changed -O to -o for gatk 3.8
+# 3.8 also requires -T for calling HaplotypeCaller
+# java -jar $EBROOTGATK/GenomeAnalysisTK.jar for 3.8
+# gatk 4 only requires "gatk HaplotypeCaller"
+
 rule hap_caller:
     input:
         ref = f"{ref_dir}/{ref}",
@@ -32,7 +37,7 @@ rule hap_caller:
         java -jar $EBROOTGATK/GenomeAnalysisTK.jar \ 
             -T HaplotypeCaller \
             -I {input.CS_bam} \
-            -O {output.gvcf} \
+            -o {output.gvcf} \
             -R {input.ref} \
             -L {input.intervals} \
             -ERC GVCF
