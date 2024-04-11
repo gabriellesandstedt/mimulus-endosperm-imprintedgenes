@@ -15,7 +15,7 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR1242441
 
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_gatk3.g.vcf.gz", sample=samples),
         f"{data_dir}/til.g.vcf.gz",
         f"{data_dir}/caes.g.vcf.gz"
 
@@ -25,16 +25,17 @@ rule hap_caller:
         CS_bam = f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam",
         intervals = f"{data_dir}/{interval_list}"
     output:
-        gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
+        gvcf = f"{data_dir}/{{sample}}_gatk3.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
-        gatk HaplotypeCaller \
+        module load GATK/3.8-1-Java-1.8.0_144
+        java -jar $EBROOTGATK/GenomeAnalysisTK.jar \ 
+            -T HaplotypeCaller \
             -I {input.CS_bam} \
             -O {output.gvcf} \
             -R {input.ref} \
             -L {input.intervals} \
-            -ERC BP_RESOLUTION
+            -ERC GVCF
         """
 
 # define rule to combine tilingii gvcfs 
