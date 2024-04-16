@@ -246,3 +246,24 @@ rule joint_genotype_all:
             --output {output.all_vcf}
         """
 
+
+rule joint_genotype_all:
+    input:
+        ref=f"{ref_dir}/{ref}",
+        intervals=f"{data_dir}/{interval_list}",
+        all_gvcf=f"{data_dir}/til_caes_gatk3.g.vcf.gz"
+    output:
+        all_vcf=f"{data_dir}/til_caes_gatk3.vcf"
+    shell:
+        """
+        module load GATK/3.8-1-Java-1.8.0_144
+            java -jar $EBROOTGATK/GenomeAnalysisTK.jar \
+            -T GenotypeGVCFs \
+            -R {input.ref} \
+            -V {input.all_gvcf} \
+            -L {input.intervals} \
+            --standard_min_confidence_threshold_for_calling 30 \
+            --includeNonVariantSites \
+            -o {output.all_vcf}
+        """
+
