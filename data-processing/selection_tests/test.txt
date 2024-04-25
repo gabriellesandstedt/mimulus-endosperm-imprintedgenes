@@ -105,6 +105,10 @@ while read -r site; do
     bcftools view -r "$site" til_caes_allsamples_allsites_final_sort_re.vcf.gz | grep -v "^#" >> til_caes_final_im62_4d.vcf
 done < degeneracy-all-sites_4d_form.bed
 
+ml pysam, networkx
+
+python degenotate/degenotate.py -a my.gtf -g Mimulus_tilingii_var_LVR.mainGenome.fasta -v til_caes_allsamples_allsites_final_418_re.vcf.gz -u output.txt -o degenotate/425 -sfs -overwrite
+
 
 
 
