@@ -18,7 +18,8 @@ ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
 ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
 
 # assign samples to be aligned
-samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413"]
+#samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413"]
+samples = ["SRR486613","SRR486611"]
 
 # define all output files from script
 rule all:
