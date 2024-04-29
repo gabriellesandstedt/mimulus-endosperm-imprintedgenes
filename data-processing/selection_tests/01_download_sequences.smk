@@ -33,7 +33,7 @@ data_dir = "/scratch/gds44474/MIMULUS/selection_tests/data"
 
 #samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413","SRR486613","SRR486611"]
 
-samples = ["SRX142379","SRX142377"]
+samples = ["SRR486613","SRR486611"]
 
 # define all output files
 rule all:
