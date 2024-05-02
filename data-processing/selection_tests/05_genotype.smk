@@ -36,7 +36,7 @@ rule hap_caller:
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk HaplotypeCaller \
             -I {input.CS_bam} \
-            -o {output.gvcf} \
+            -O {output.gvcf} \
             -R {input.ref} \
             -L {input.intervals} \
             -ERC GVCF
