@@ -33,7 +33,7 @@ rule hap_caller:
         gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
     shell:
         """
-        module load GATK/3.8-1-Java-1.8.0_144
+        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
         gatk HaplotypeCaller \
             -I {input.CS_bam} \
             -o {output.gvcf} \
