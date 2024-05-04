@@ -159,9 +159,11 @@ rule combine_gvcfs_caes:
         ICE10_gvcf = f"{data_dir}/ICE10.g.vcf.gz",
         SAB1_gvcf = f"{data_dir}/SAB1.g.vcf.gz",
         SAB19_gvcf = f"{data_dir}/SAB19.g.vcf.gz",
+        SRR486613_gvcf = f"{data_dir}/SRR486613.g.vcf.gz",
+        SRR486611_gvcf = f"{data_dir}/SRR486611.g.vcf.gz",
         interval_list = f"{data_dir}/{interval_list}"
     output:
-        all_gvcf = f"{data_dir}/til_caes.g.vcf.gz"  
+        all_gvcf = f"{data_dir}/til_caes_gutt.g.vcf.gz"  
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -179,6 +181,8 @@ rule combine_gvcfs_caes:
             --variant {input.ICE10_gvcf} \
             --variant {input.SAB1_gvcf} \
             --variant {input.SAB19_gvcf} \
+            --variant {input.SRR486613_gvcf} \
+            --variant {input.SRR486611_gvcf} \
             -L {input.interval_list} \
             -O {output.all_gvcf}
         """
