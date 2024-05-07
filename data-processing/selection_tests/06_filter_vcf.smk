@@ -144,18 +144,18 @@ rule extract_passed_invariants:
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
         """
 
-samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424416", "SRR12424417", "SRR12424418", "SRR12424419", "SRR12424421", "SRR12424422", "SRR12424423", "SRR3103524"]
+samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413","SRR486613","SRR486611"]
 
 # split snp vcf for individual depth filtering
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_outgrp_snps.vcf", sample=samples)
 
 rule split_vcf:
     input:
         snp_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps_qualfilterPASSED.vcf"
     output:
-        ind_vcf=f"{data_dir}/{{sample}}_snps.vcf",
+        ind_vcf=f"{data_dir}/{{sample}}_outgrp_snps.vcf",
     params:
         sample=lambda wildcards: wildcards.sample
     shell:
@@ -169,13 +169,13 @@ rule split_vcf:
 # split invariant vcf for individual depth filtering
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_outgrp_invar.vcf", sample=samples)
 
 rule split_vcf:
     input:
-        invar_vcf=f"{data_dir}/til_caes_invariant_qualfilterPASSED.vcf"
+        invar_vcf=f"{data_dir}/til_caes_gutt_invariant_qualfilterPASSED.vcf"
     output:
-        ind_vcf=f"{data_dir}/{{sample}}_invar.vcf",
+        ind_vcf=f"{data_dir}/{{sample}}_outgrp_invar.vcf",
     params:
         sample=lambda wildcards: wildcards.sample
     shell:
@@ -185,20 +185,20 @@ rule split_vcf:
         mv {output.ind_vcf}.recode.vcf {output.ind_vcf}
         """
 
-samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424416", "SRR12424417", "SRR12424418", "SRR12424419", "SRR12424421", "SRR12424422", "SRR12424423", "SRR3103524"]
-maxDP = ["113","66","123","133","199","105","115","130","163","149","130","635"]
-#maxDP_lvr1 = ["127","68","137","134","213","123", "124", "138", "183", "164", "137","671"]
+samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421","SRR12424411", "SRR12424412","SRR12424417","SRR12424423", "SRR12424422", "SRR12424418","SRR12424416", "SRR12424413","SRR486613","SRR486611"]
+maxDP = ["127","68","137","134","213","123", "124", "138", "183", "164", "137","671","179","217"]
+#maxDP_lvr1 = ["127","68","137","134","213","123", "124", "138", "183", "164", "137","671","179","217"]
 #maxDP_im62 = ["113","66","123","133","199","105","115","130","163","149","130","635"]
 # filter for individual depth of snp files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf", sample=samples)
 
 rule filt_dp_snp_samples:
     input:
-        ind_snp_vcf=f"{data_dir}/{{sample}}_snps.vcf"
+        ind_snp_vcf=f"{data_dir}/{{sample}}_outgrp_snps.vcf"
     output:
-        dp_vcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf"
+        dp_vcf=f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf"
     params:
         maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
     shell:
@@ -212,13 +212,13 @@ rule filt_dp_snp_samples:
 # filter for individual depth of invariant files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf", sample=samples)
+        expand(f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf", sample=samples)
 
 rule filt_dp_snp_samples:
     input:
-        ind_invar_vcf=f"{data_dir}/{{sample}}_invar.vcf"
+        ind_invar_vcf=f"{data_dir}/{{sample}}_outgrp_invar.vcf"
     output:
-        dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf"
+        dp_vcf=f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf"
     params:
         maxDP=lambda wildcards: maxDP[samples.index(wildcards.sample)] 
     shell:
@@ -234,15 +234,15 @@ samples = ["SRR12424410", "SRR12424411", "SRR12424412", "SRR12424413", "SRR12424
 # zip snp files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz.tbi", sample=samples)
+        expand(f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf.gz.tbi", sample=samples)
 
 rule vcf_to_gzvcf_snpfiles:
     input:
-        ind_dp_vcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf",
+        ind_dp_vcf=f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf",
     output:
-        ind_dp_gzvcf=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz",
-        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz.tbi",
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf.gz.tbi",
     shell:
         """
         module load  HTSlib/1.18-GCC-12.2.0
@@ -254,14 +254,14 @@ rule vcf_to_gzvcf_snpfiles:
 # zip invariant files
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples),
-        expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi", sample=samples)
+        expand(f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf.gz", sample=samples),
+        expand(f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf.gz.tbi", sample=samples)
 rule vcf_to_gzvcf_invarfiles:
     input:
-        ind_dp_vcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf",
+        ind_dp_vcf=f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf",
     output:
-        ind_dp_gzvcf=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz",
-        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz.tbi",
+        ind_dp_gzvcf=f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf.gz",
+        ind_dp_gzvcf_tbi=f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf.gz.tbi",
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
@@ -272,16 +272,16 @@ rule vcf_to_gzvcf_invarfiles:
 
 rule all:
     input:
-        f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
-        f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
+        f"{data_dir}/til_caes_outgrp_snps_filtered_maxdp_mindp5.vcf",
+        f"{data_dir}/til_caes_outgrp_invar_filtered_maxdp_mindp5.vcf"
 
 rule merge_vcfs:
     input:
-        snps = expand(f"{data_dir}/{{sample}}_snps_maxdp_mindp5.vcf.gz", sample=samples),
-        invar = expand(f"{data_dir}/{{sample}}_invar_maxdp_mindp5.vcf.gz", sample=samples)
+        snps = expand(f"{data_dir}/{{sample}}_outgrp_snps_maxdp_mindp5.vcf.gz", sample=samples),
+        invar = expand(f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf.gz", sample=samples)
     output:
-        snps_merged_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5.vcf",
-        invar_merged_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5.vcf"
+        snps_merged_vcf=f"{data_dir}/til_caes_outgrp_snps_filtered_maxdp_mindp5.vcf",
+        invar_merged_vcf=f"{data_dir}/til_caes_outgrp_invar_filtered_maxdp_mindp5.vcf"
     shell:
         """
         module load  BCFtools/1.15.1-GCC-11.3.0
