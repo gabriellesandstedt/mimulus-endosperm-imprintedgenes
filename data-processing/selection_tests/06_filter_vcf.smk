@@ -9,9 +9,9 @@ ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
 rule select_biallelic_snps:
     input:
         ref=f"{ref_dir}/{ref}",
-        vcf=f"{data_dir}/til_caes.vcf"
+        vcf=f"{data_dir}/til_caes_gutt.vcf"
     output:
-        biallelic_vcf=f"{data_dir}/til_caes_biallelic_snps.vcf"
+        biallelic_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -27,9 +27,9 @@ rule select_biallelic_snps:
 rule select_invariant_sites:
     input:
         ref=f"{ref_dir}/{ref}",
-        vcf=f"{data_dir}/til_caes.vcf"
+        vcf=f"{data_dir}/til_caes_gutt.vcf"
     output:
-        invariant_vcf=f"{data_dir}/til_caes_invariant.vcf"
+        invariant_vcf=f"{data_dir}/til_caes_gutt_invariant.vcf"
     shell:
         """
         module load  GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -86,9 +86,9 @@ rule invariant_table:
 rule filter_variants:
     input:
         ref=f"{ref_dir}/{ref}",
-        biallelic_vcf=f"{data_dir}/til_caes_biallelic_snps.vcf"
+        biallelic_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps.vcf"
     output:
-        filtered_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilter.vcf"
+        filtered_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps_qualfilter.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -106,9 +106,9 @@ rule filter_variants:
 # extract passed variants
 rule extract_passed_variants:
     input:
-        filtered_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilter.vcf"
+        filtered_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps_qualfilter.vcf"
     output:
-        filtered_passed_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilterPASSED.vcf"
+        filtered_passed_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps_qualfilterPASSED.vcf"
     shell:
         """
         grep -E '^#|PASS' {input.filtered_vcf} > {output.filtered_passed_vcf}
@@ -118,9 +118,9 @@ rule extract_passed_variants:
 rule filter_invariants:
     input:
         ref=f"{ref_dir}/{ref}",
-        invcf=f"{data_dir}/til_caes_invariant_geno_called.vcf"
+        invcf=f"{data_dir}/til_caes_gutt_invariant.vcf"
     output:
-        filtered_invcf=f"{data_dir}/til_caes_invariant_qualfilter.vcf"
+        filtered_invcf=f"{data_dir}/til_caes_gutt_invariant_qualfilter.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -136,9 +136,9 @@ rule filter_invariants:
 # extract passed invariants
 rule extract_passed_invariants:
     input:
-        filtered_invcf=f"{data_dir}/til_caes_invariant_qualfilter.vcf"
+        filtered_invcf=f"{data_dir}/til_caes_gutt_invariant_qualfilter.vcf"
     output:
-        filtered_passed_invcf=f"{data_dir}/til_caes_invariant_qualfilterPASSED.vcf"
+        filtered_passed_invcf=f"{data_dir}/til_caes_gutt_invariant_qualfilterPASSED.vcf"
     shell:
         """
         grep -E '^#|PASS' {input.filtered_invcf} > {output.filtered_passed_invcf}
@@ -153,7 +153,7 @@ rule all:
 
 rule split_vcf:
     input:
-        snp_vcf=f"{data_dir}/til_caes_biallelic_snps_qualfilterPASSED.vcf"
+        snp_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps_qualfilterPASSED.vcf"
     output:
         ind_vcf=f"{data_dir}/{{sample}}_snps.vcf",
     params:
