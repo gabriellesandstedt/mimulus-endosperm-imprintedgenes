@@ -5,6 +5,11 @@ title: perform featureCounts for caespitosa and tilingii
 
 # Load the required library and suppress messages
 ```{r}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Rsubread")
+
 suppressMessages(library(Rsubread))
 
 # Set the working directory
@@ -33,7 +38,7 @@ feature_counts_caes <- featureCounts(
   useMetaFeatures = TRUE,
   countMultiMappingReads = FALSE,
   ignoreDup = FALSE,
-  strandSpecific = 2,
+  strandSpecific = 0,
   isPairedEnd = TRUE,
   requireBothEndsMapped = TRUE,
   countChimericFragments = FALSE,
@@ -43,7 +48,7 @@ feature_counts_caes <- featureCounts(
 )
 
 # Save the caespitosa dataset result as an RDS file
-saveRDS(feature_counts_caes, 'endosperm_counts_caes_object')
+saveRDS(feature_counts_caes_ss, 'endosperm_counts_caes_object_ss')
 ```
 
 
