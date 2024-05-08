@@ -214,7 +214,7 @@ rule all:
     input:
         expand(f"{data_dir}/{{sample}}_outgrp_invar_maxdp_mindp5.vcf", sample=samples)
 
-rule filt_dp_snp_samples:
+rule filt_dp_inv_samples:
     input:
         ind_invar_vcf=f"{data_dir}/{{sample}}_outgrp_invar.vcf"
     output:
@@ -290,7 +290,7 @@ rule merge_vcfs:
         """
 
 ml BCFtools/1.15.1-GCC-11.3.0
-bcftools view -e 'ALT="*"' -O v -o til_caes_snps_filtered_maxdp_mindp5_het_nodel.vcf til_caes_snps_filtered_maxdp_mindp5_het.vcf
+bcftools view -e 'ALT="*"' -O v -o til_caes_outgrp_snps_filtered_maxdp_mindp5_nodel.vcf til_caes_outgrp_snps_filtered_maxdp_mindp5.vcf
 
 
 #filter for minor allele count and max missing (2/12 samples with a genotype present)
@@ -337,13 +337,13 @@ rule filter_inv:
 # bgzip and tabix files
 rule vcf_to_gzvcf:
     input:
-        var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf",
-        invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf"
+        var_vcf=f"{data_dir}/til_caes_outgrp_snps_filtered_maxdp_mindp5_nodel.vcf",
+        invar_vcf=f"{data_dir}/til_caes_outgrp_invar_filtered_maxdp_mindp5.vcf"
     output:
-        gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf.gz",
-        tabix_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf.gz.tbi",
-        gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf.gz",
-        tabix_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf.gz.tbi"
+        gz_var_vcf=f"{data_dir}/til_caes_outgrp_snps_filtered_maxdp_mindp5_nodel.vcf.gz",
+        tabix_var_vcf=f"{data_dir}/til_caes_outgrp_snps_filtered_maxdp_mindp5_nodel.vcf.gz.tbi",
+        gz_invar_vcf=f"{data_dir}/til_caes_outgrp_invar_filtered_maxdp_mindp5.vcf.gz",
+        tabix_invar_vcf=f"{data_dir}/til_caes_outgrp_invar_filtered_maxdp_mindp5.vcf.gz.tbi"
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
@@ -355,11 +355,11 @@ rule vcf_to_gzvcf:
 
 rule combine_vcfs:
     input:
-       gz_var_vcf=f"{data_dir}/til_caes_snps_filtered_maxdp_mindp5_het_nodel_mm_mac.vcf.gz",
-       gz_invar_vcf=f"{data_dir}/til_caes_invar_filtered_maxdp_mindp5_mm.vcf.gz"
+       gz_var_vcf=f"{data_dir}/til_caes_outgrp_snps_filtered_maxdp_mindp5_nodel.vcf.gz",
+       gz_invar_vcf=f"{data_dir}/til_caes_outgrp_invar_filtered_maxdp_mindp5.vcf.gz"
     output:
-       final_vcf=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz",
-       tabix_final=f"{data_dir}/til_caes_allsamples_allsites_final.vcf.gz.tbi"
+       final_vcf=f"{data_dir}/til_caes_allsamples_outgrp_allsites_final.vcf.gz",
+       tabix_final=f"{data_dir}/til_caes_allsamples_outgrp_allsites_final.vcf.gz.tbi"
     shell:
         """
         module load HTSlib/1.18-GCC-12.2.0
