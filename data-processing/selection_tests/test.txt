@@ -107,7 +107,7 @@ done < degeneracy-all-sites_4d_form.bed
 
 ml pysam, networkx
 
-python degenotate/degenotate.py -a my.gtf -g Mimulus_tilingii_var_LVR.mainGenome.fasta -v til_caes_allsamples_allsites_final_418_re.vcf.gz -u output.txt -o degenotate/425 -sfs -overwrite
+python degenotate/degenotate.py -a my.gtf -g Mimulus_tilingii_var_LVR.mainGenome.fasta -v til_caes_allsamples_outgrp_allsites_final_re.vcf.gz -u output.txt -e PAG2,KCK1,ICE10,UTC1,UTC2,TWN36,GAB1,GAB2 -o degenotate/425 -sfs -overwrite
 
 
 
