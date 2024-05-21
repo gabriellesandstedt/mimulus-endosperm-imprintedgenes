@@ -312,7 +312,7 @@ rule final_til_vcf:
          --vcf {input.til_merged_vcf} \
          --remove-indels \
          --minDP 4 \
-         --max-missing 0 \
+         --max-missing 1 \
          --mac 1 \
          --recode \
          --recode-INFO-all \
@@ -335,7 +335,7 @@ rule final_caes_vcf:
          --vcf {input.caes_merged_vcf} \
          --remove-indels \
          --minDP 4 \
-         --max-missing 0 \
+         --max-missing 1 \
          --mac 1 \
          --recode \
          --recode-INFO-all \
