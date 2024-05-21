@@ -15,7 +15,7 @@ data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
 scripts_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/scripts"
 ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
 
-# reference genome: Mimulus IM62 v3
+# reference genome: Mimulus LVR v1 
 ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
 
 # assign samples for individual depth filtering
