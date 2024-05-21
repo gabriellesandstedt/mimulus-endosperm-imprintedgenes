@@ -321,7 +321,7 @@ rule final_til_vcf:
 
 # assign rule for final filtering steps of tilingii vcf
 # min DP 4 
-# doesn't allow any missing genotypes with max-missing 0
+# doesn't allow any missing genotypes with max-missing 1
 # minor allele count (mac) of 1
 rule final_caes_vcf:
     input:
