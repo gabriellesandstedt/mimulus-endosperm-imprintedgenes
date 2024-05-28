@@ -111,6 +111,41 @@ python degenotate/degenotate.py -a my.gtf -g Mimulus_tilingii_var_LVR.mainGenome
 
 til_caes_allsamples_outgrp_allsites_final_re.vcf.gz -u output.txt -e ICE10,LVR1,SOP12,SAB1,SAB19 -o degenotate/508_caes --no-fixed-in -sfs -overwrite
 
+# for PAML
+#get cds from ref gtf 
+awk '$3 == "CDS"' my.gtf > cds_annotations.gtf
+
+# gtf to bed 
+# cds.bed
+awk '{print $1"\t"$2"\t"$3"\t"$7}' combined_cds_genes.bed > combined_cds_genes_filtered.bed
+sed 's/[";]//g' combined_cds_genes_filtered.bed > combined_cds_genes_cleaned.bed
+
+
+# species fasta files to cds seq only 
+bedtools getfasta -fi til.fasta -bed combined_cds_genes_cleaned.bed -fo til_cds_genes.fasta -name+
+bedtools getfasta -fi caes.fasta -bed combined_cds_genes_cleaned.bed -fo caes_cds_genes.fasta -name+
+bedtools getfasta -fi gutt.fasta -bed combined_cds_genes_cleaned.bed -fo gutt_cds_genes.fasta -name+
+
+#make blast database
+makeblastdb -in til_cds_genes.fasta -dbtype nucl -out til_cds_db
+makeblastdb -in caes_cds_genes.fasta -dbtype nucl -out caes_cds_db
+makeblastdb -in gutt_cds_genes.fasta -dbtype nucl -out gutt_cds_db
+
+
+# recip blast hits
+# BLAST til genes against caes and gutt
+blastn -query til_cds_genes.fasta -db caes_cds_db -out til_vs_caes.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query til_cds_genes.fasta -db gutt_cds_db -out til_vs_gutt.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+
+# BLAST caes genes against til and gutt
+blastn -query caes_cds_genes.fasta -db til_cds_db -out caes_vs_til.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query caes_cds_genes.fasta -db gutt_cds_db -out caes_vs_gutt.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+
+# BLAST gutt genes against til and caes
+blastn -query gutt_cds_genes.fasta -db til_cds_db -out gutt_vs_til.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query gutt_cds_genes.fasta -db caes_cds_db -out gutt_vs_caes.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+
+
 
 
 
