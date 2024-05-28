@@ -110,40 +110,285 @@ ml pysam, networkx
 python degenotate/degenotate.py -a my.gtf -g Mimulus_tilingii_var_LVR.mainGenome.fasta -v til_caes_allsamples_outgrp_allsites_final_re.vcf.gz -u output.txt -e PAG2,KCK1,UTC1,UTC2,TWN36,GAB1,GAB2 -o degenotate/508_2 -sfs -overwrite
 
 til_caes_allsamples_outgrp_allsites_final_re.vcf.gz -u output.txt -e ICE10,LVR1,SOP12,SAB1,SAB19 -o degenotate/508_caes --no-fixed-in -sfs -overwrite
+############
+
+### generate consensus fasta files:
+REFERENCE="Mimulus_tilingii_var_LVR.mainGenome.fasta"
+VCF="til_caes_allsamples_outgrp_allsites_final_forPAML.vcf.gz"
+
+# Group of sample IDs
+GROUP1=("LVR1" "ICE10" "SOP12" "SAB1" "SAB19")
+GROUP2=("UTC1" "UTC2" "TWN36" "GAB1" "GAB2" "KCK1" "PAG2")
+GROUP3=("AHQT" "SLP")
+
+# Function to process a group of samples
+process_group() {
+    local GROUP=("$@")
+    local OUTPUT_FILE=$1
+    shift
+    local SAMPLES=("$@")
+
+    # Loop through each sample in the group and generate the consensus sequence
+    for SAMPLE in "${SAMPLES[@]}"; do
+        echo "Processing $SAMPLE..."
+        bcftools consensus -f "$REFERENCE" -s "$SAMPLE" "$VCF" > "${SAMPLE}.fasta"
+    done
+
+    # Concatenate all sample FASTA files into the group FASTA file
+    cat "${SAMPLES[@]/%/.fasta}" > "$OUTPUT_FILE"
+
+    # Clean up individual sample FASTA files
+    rm "${SAMPLES[@]/%/.fasta}"
+}
+
+# Process each group
+process_group "til.fasta" "${GROUP1[@]}"
+process_group "caes.fasta" "${GROUP2[@]}"
+process_group "gutt.fasta" "${GROUP3[@]}"
 
 # for PAML
 #get cds from ref gtf 
 awk '$3 == "CDS"' my.gtf > cds_annotations.gtf
 
-# gtf to bed 
-# cds.bed
+# gtf to bed = cds.bed
 awk '{print $1"\t"$2"\t"$3"\t"$7}' combined_cds_genes.bed > combined_cds_genes_filtered.bed
 sed 's/[";]//g' combined_cds_genes_filtered.bed > combined_cds_genes_cleaned.bed
 
+# python script to extract concatenated CDS from the three fasta files
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from collections import defaultdict
 
-# species fasta files to cds seq only 
-bedtools getfasta -fi til.fasta -bed combined_cds_genes_cleaned.bed -fo til_cds_genes.fasta -name+
-bedtools getfasta -fi caes.fasta -bed combined_cds_genes_cleaned.bed -fo caes_cds_genes.fasta -name+
-bedtools getfasta -fi gutt.fasta -bed combined_cds_genes_cleaned.bed -fo gutt_cds_genes.fasta -name+
+# Function to parse the BED file and return a dictionary of gene CDS coordinates
+def parse_bed_file(bed_file):
+    gene_cds = defaultdict(list)
+    with open(bed_file, 'r') as bed:
+        for line in bed:
+            fields = line.strip().split('\t')
+            chrom = fields[0]
+            start = int(fields[1])
+            end = int(fields[2])
+            gene_id = fields[3]
+            gene_cds[gene_id].append((chrom, start, end))
+    return gene_cds
+
+# Function to load the FASTA file and return a dictionary of sequences
+def load_fasta_sequences(fasta_file):
+    return {record.id: record for record in SeqIO.parse(fasta_file, 'fasta')}
+
+# Function to extract and concatenate CDS sequences
+def extract_and_concatenate_cds(gene_cds, fasta_sequences):
+    concatenated_sequences = defaultdict(str)
+    
+    for gene_id, cds_list in gene_cds.items():
+        concatenated_seq = ''
+        for chrom, start, end in sorted(cds_list, key=lambda x: x[1]):
+            seq_record = fasta_sequences[chrom]
+            concatenated_seq += str(seq_record.seq[start:end])
+        concatenated_sequences[gene_id] = concatenated_seq
+    
+    return concatenated_sequences
+
+# Function to write the concatenated sequences to a FASTA file
+def write_concatenated_sequences_to_fasta(concatenated_sequences, output_fasta):
+    records = [SeqRecord(Seq(seq), id=gene_id, description="") 
+               for gene_id, seq in concatenated_sequences.items()]
+    SeqIO.write(records, output_fasta, 'fasta')
+
+# File paths
+bed_file = 'combined_cds_genes_cleaned.bed'
+til_fasta = 'til.fasta'
+caes_fasta = 'caes.fasta'
+gutt_fasta = 'gutt.fasta'
+
+# Parse the BED file
+gene_cds = parse_bed_file(bed_file)
+
+
+
+#####
+# Load the FASTA sequences
+til_fasta_sequences = load_fasta_sequences(til_fasta)
+caes_fasta_sequences = load_fasta_sequences(caes_fasta)
+gutt_fasta_sequences = load_fasta_sequences(gutt_fasta)
+
 
 #make blast database
-makeblastdb -in til_cds_genes.fasta -dbtype nucl -out til_cds_db
-makeblastdb -in caes_cds_genes.fasta -dbtype nucl -out caes_cds_db
-makeblastdb -in gutt_cds_genes.fasta -dbtype nucl -out gutt_cds_db
+makeblastdb -in til_concatenated_cds.fasta -dbtype nucl -out til_cds_db
+makeblastdb -in caes_concatenated_cds.fasta -dbtype nucl -out caes_cds_db
+makeblastdb -in gutt_concatenated_cds.fasta -dbtype nucl -out gutt_cds_db
 
 
 # recip blast hits
 # BLAST til genes against caes and gutt
-blastn -query til_cds_genes.fasta -db caes_cds_db -out til_vs_caes.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
-blastn -query til_cds_genes.fasta -db gutt_cds_db -out til_vs_gutt.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query til_concatenated_cds.fasta -db caes_cds_db -out til_vs_caes.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query til_concatenated_cds.fasta -db gutt_cds_db -out til_vs_gutt.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
 
 # BLAST caes genes against til and gutt
-blastn -query caes_cds_genes.fasta -db til_cds_db -out caes_vs_til.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
-blastn -query caes_cds_genes.fasta -db gutt_cds_db -out caes_vs_gutt.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query caes_concatenated_cds.fasta -db til_cds_db -out caes_vs_til.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query caes_concatenated_cds.fasta -db gutt_cds_db -out caes_vs_gutt.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
 
 # BLAST gutt genes against til and caes
-blastn -query gutt_cds_genes.fasta -db til_cds_db -out gutt_vs_til.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
-blastn -query gutt_cds_genes.fasta -db caes_cds_db -out gutt_vs_caes.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query gutt_concatenated_cds.fasta -db til_cds_db -out gutt_vs_til.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+blastn -query gutt_concatenated_cds.fasta -db caes_cds_db -out gutt_vs_caes.blast -outfmt 6 -max_target_seqs 1 -evalue 1e-5
+
+
+### run R script
+
+library(Biostrings)
+library(msa)
+library(seqinr) 
+library(tidyverse)
+library(dplyr)
+
+# Load the BLAST results
+til_vs_caes <- read.table("til_vs_caes.blast", header = FALSE, col.names = c("query", "subject", "identity", "length", "mismatches", "gapopens", "qstart", "qend", "sstart", "send", "evalue", "bitscore"))
+caes_vs_til <- read.table("caes_vs_til.blast", header = FALSE, col.names = c("query", "subject", "identity", "length", "mismatches", "gapopens", "qstart", "qend", "sstart", "send", "evalue", "bitscore"))
+til_vs_gutt <- read.table("til_vs_gutt.blast", header = FALSE, col.names = c("query", "subject", "identity", "length", "mismatches", "gapopens", "qstart", "qend", "sstart", "send", "evalue", "bitscore"))
+gutt_vs_til <- read.table("gutt_vs_til.blast", header = FALSE, col.names = c("query", "subject", "identity", "length", "mismatches", "gapopens", "qstart", "qend", "sstart", "send", "evalue", "bitscore"))
+caes_vs_gutt <- read.table("caes_vs_gutt.blast", header = FALSE, col.names = c("query", "subject", "identity", "length", "mismatches", "gapopens", "qstart", "qend", "sstart", "send", "evalue", "bitscore"))
+gutt_vs_caes <- read.table("gutt_vs_caes.blast", header = FALSE, col.names = c("query", "subject", "identity", "length", "mismatches", "gapopens", "qstart", "qend", "sstart", "send", "evalue", "bitscore"))
+
+# Find reciprocal best hits between til and caes
+reciprocal_til_caes <- til_vs_caes %>%
+  inner_join(caes_vs_til, by = c("query" = "subject", "subject" = "query")) %>%
+  select(query, subject) %>%
+  rename(til_gene = query, caes_gene = subject)
+
+# Find reciprocal best hits between til and gutt
+reciprocal_til_gutt <- til_vs_gutt %>%
+  inner_join(gutt_vs_til, by = c("query" = "subject", "subject" = "query")) %>%
+  select(query, subject) %>%
+  rename(til_gene = query, gutt_gene = subject)
+
+# Find reciprocal best hits between caes and gutt
+reciprocal_caes_gutt <- caes_vs_gutt %>%
+  inner_join(gutt_vs_caes, by = c("query" = "subject", "subject" = "query")) %>%
+  select(query, subject) %>%
+  rename(caes_gene = query, gutt_gene = subject)
+
+sum(duplicated(reciprocal_til_caes$til_gene))
+sum(duplicated(reciprocal_til_gutt$til_gene))
+sum(duplicated(reciprocal_caes_gutt$caes_gene))
+
+# If duplicates are found, you need to filter them out. For example, you can keep the first occurrence.
+reciprocal_til_caes <- reciprocal_til_caes[!duplicated(reciprocal_til_caes$til_gene), ]
+reciprocal_til_gutt <- reciprocal_til_gutt[!duplicated(reciprocal_til_gutt$til_gene), ]
+reciprocal_caes_gutt <- reciprocal_caes_gutt[!duplicated(reciprocal_caes_gutt$caes_gene), ]
+
+
+# Combine the reciprocal best hits into one data frame
+ortholog_pairs <- reciprocal_til_caes %>%
+  inner_join(reciprocal_til_gutt, by = "til_gene") %>%
+  inner_join(reciprocal_caes_gutt, by = c("caes_gene" = "caes_gene", "gutt_gene" = "gutt_gene"))
+
+# Display the ortholog pairs
+print(ortholog_pairs)
+head(ortholog_pairs)
+str(ortholog_pairs)
+
+til_sequences <- read.fasta("til_concatenated_cds.fasta")
+caes_sequences <- read.fasta("caes_concatenated_cds.fasta")
+gutt_sequences <- read.fasta("gutt_concatenated_cds.fasta")
+
+write.table(ortholog_pairs, "/Users/gabriellesandstedt/Dropbox/codeml_att1/ortho_pairs.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+
+# Function to align sequences using MAFFT and write to PHYLIP
+align_and_write_phylip <- function(til_seq, caes_seq, gutt_seq, file) {
+  sequences <- DNAStringSet(c(til = til_seq, caes = caes_seq, gutt = gutt_seq))
+  
+  # Write sequences to a temporary FASTA file
+  fasta_file <- tempfile(fileext = ".fasta")
+  writeXStringSet(sequences, filepath = fasta_file)
+  
+  # Perform alignment using MAFFT
+  aligned_file <- tempfile(fileext = ".fasta")
+  system(paste("mafft --auto", fasta_file, ">", aligned_file))
+  
+  # Check if MAFFT executed successfully
+  if (!file.exists(aligned_file) || file.size(aligned_file) == 0) {
+    stop("MAFFT alignment failed. Ensure MAFFT is installed and in your PATH.")
+  }
+  
+  # Read aligned sequences
+  aligned_seqs <- readDNAStringSet(aligned_file)
+  
+  # Write aligned sequences to PHYLIP format
+  write.phylip(aligned_seqs, file)
+}
+
+# Function to write aligned sequences to PHYLIP format
+write.phylip <- function(aligned_seqs, file) {
+  seq_names <- names(aligned_seqs)
+  seqs <- as.character(aligned_seqs)
+  
+  # Convert to matrix format
+  seq_matrix <- do.call(rbind, lapply(seqs, function(x) unlist(strsplit(x, ""))))
+  rownames(seq_matrix) <- seq_names
+  
+  # Write to PHYLIP file
+  write.dna(as.DNAbin(seq_matrix), file = file, format = "sequential", nbcol = -1, colsep = "")
+}
+
+# Loop over each gene pair
+for (i in seq_len(nrow(ortholog_pairs))) {
+  gene_pair <- ortholog_pairs[i, ]
+  
+  til_seq <- til_sequences[[gene_pair$til_gene]]
+  caes_seq <- caes_sequences[[gene_pair$caes_gene]]
+  gutt_seq <- gutt_sequences[[gene_pair$gutt_gene]]
+  
+  alignment_file <- paste0("alignment_", i, ".phy")
+  control_file <- paste0("codeml_", i, ".ctl")
+  result_file <- paste0("results_", i, ".txt")
+  
+  # Align sequences and write to PHYLIP format
+  align_and_write_phylip(til_seq, caes_seq, gutt_seq, alignment_file)
+  
+  # Create control file
+  control_content <- sprintf("
+    seqfile = %s
+    treefile = tree.nwk
+    outfile = %s
+    
+    noisy = 9
+    verbose = 1
+    runmode = 0
+    
+    seqtype = 1
+    CodonFreq = 2
+    aaDist = 0
+    model = 0
+    NSsites = 0
+    icode = 0
+    fix_kappa = 0
+    kappa = 2
+    fix_omega = 0
+    omega = 1
+    
+    clock = 0
+    getSE = 0
+    RateAncestor = 0
+    
+    small_Diff = .5e-6
+    cleandata = 1
+    fix_blength = 0
+    method = 0
+  ", alignment_file, result_file)
+  
+  writeLines(control_content, control_file)
+  
+  # Run codeml
+  system(paste("codeml", control_file))
+}
+
+# Collect results
+results <- lapply(seq_len(nrow(ortholog_pairs)), function(i) {
+  result_file <- paste0("results_", i, ".txt")
+  # Code to extract dN/dS value from result file
+})
 
 
 
