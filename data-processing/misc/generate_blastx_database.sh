@@ -8,3 +8,12 @@ blastx -query shared_34_MEGs.fasta -db /scratch/gds44474/MIMULUS/snps_parents_ti
 gunzip Araport11_pep_20220914_representative_gene_model.gz
 makeblastdb -in /scratch/gds44474/MIMULUS/snps_parents_til/data/tair_protein/Araport11_pep_20220914_representative_gene_model -dbtype prot
 blastx -query shared_34_MEGs.fasta -db /scratch/gds44474/MIMULUS/snps_parents_til/data/tair_protein/Araport11_pep_20220914_representative_gene_model  -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out shared_34_MEGs_tair.txt
+
+
+
+#https://www.genoscope.cns.fr/brassicanapus/data/
+wget https://www.genoscope.cns.fr/brassicanapus/data/Brassica_napus.annotation_v5.pep.fa.gz
+gunzip Brassica_napus.annotation_v5.pep.fa.gz
+makeblastdb -in /scratch/gds44474/MIMULUS/snps_parents_til/data/BLAST_dbs/brassicanapus/Brassica_napus.annotation_v5.pep.fa -dbtype prot -out brassicanapus
+blastx -query til_197megs_sequences.fasta -db /scratch/gds44474/MIMULUS/snps_parents_til/data/BLAST_dbs/brassicanapus  -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out til_197megs_sequences_brassica_napus.txt
+blastx -query til_197megs_sequences.fasta -db /scratch/gds44474/MIMULUS/snps_parents_til/data/BLAST_dbs/brassicanapus -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -max_hsps 1 -outfmt 6 -out til_197megs_sequences_brassica_napus.txt
