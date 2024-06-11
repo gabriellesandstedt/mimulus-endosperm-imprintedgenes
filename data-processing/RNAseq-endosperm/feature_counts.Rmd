@@ -86,3 +86,47 @@ feature_counts_til <- featureCounts(
 # Save the tilingii dataset result as an RDS file
 saveRDS(feature_counts_til, 'endosperm_counts_til_object')
 ```
+
+
+# Define BAM file names for the tilingii dataset
+```{r}
+bam_names_all <- c(
+  'LVR1xSOP12_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'SOP12xLVR1_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'LVR1xSOP12_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'SOP12xLVR1_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'LVR1xSOP12_3_STAR_LVR_v1_MD_Split_Q60.bam',
+  'SOP12xLVR1_3_STAR_LVR_v1_MD_Split_Q60.bam',
+  'TWN36xUTC1_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'UTC1xTWN36_1_STAR_LVR_v1_MD_Split_Q60.bam',
+  'TWN36xUTC1_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'UTC1xTWN36_2_STAR_LVR_v1_MD_Split_Q60.bam',
+  'TWN36xUTC1_3_STAR_LVR_v1_MD_Split_Q60.bam',
+  'UTC1xTWN36_3_STAR_LVR_v1_MD_Split_Q60.bam'
+)
+
+```
+
+# Perform featureCounts for tilingii dataset
+# I generated MtilingiivarLVRv1.1.primaryTrs.gtf using 05_feature_counts.smk
+```{r}
+feature_counts_combined <- featureCounts(
+  files = bam_names_all,
+  annot.ext = 'MtilingiivarLVRv1.1.primaryTrs.gtf',
+  isGTFAnnotationFile = TRUE,
+  useMetaFeatures = TRUE,
+  countMultiMappingReads = FALSE,
+  ignoreDup = FALSE,
+  strandSpecific = 2,
+  isPairedEnd = TRUE,
+  requireBothEndsMapped = TRUE,
+  countChimericFragments = FALSE,
+  autosort = TRUE,
+  nthreads = 6,
+  verbose = TRUE
+)
+
+# Save the tilingii dataset result as an RDS file
+saveRDS(feature_counts_all, 'endosperm_counts_all_object')
+```
+
