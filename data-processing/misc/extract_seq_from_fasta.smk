@@ -28,6 +28,6 @@ def extract_sequences(fasta_file, genes_of_interest_file, output_file):
 # specify the output file with output.fasta
 fasta_file = 'all_genes_fasta.fa'
 genes_of_interest_file = 'genes_of_interest.txt'
-output_file = 'output.fasta'
+output_file = 'genes_of_interest.fasta'
 
 extract_sequences(fasta_file, genes_of_interest_file, output_file)
