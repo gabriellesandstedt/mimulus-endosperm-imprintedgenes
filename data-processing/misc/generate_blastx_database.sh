@@ -5,7 +5,7 @@ gunzip /scratch/gds44474/MIMULUS/snps_parents_til/data/blastx_db/GCF_000504015.1
 makeblastdb -in GCF_000504015.1_Mimgu1_0_protein.faa -dbtype prot
 # diff expression
 # tilingii higher:
-blastx -query til_higher.fasta -db GCF_000504015.1_Mimgu1_0_protein.faa -evalue 1e-10 -max_target_seqs 10 -out til_higher_blastx.txt -num_threads 4 -outfmt 6 -max_hsps 1 
+blastx -query all_DEGs.fasta -db GCF_000504015.1_Mimgu1_0_protein.faa -evalue 1e-10 -max_target_seqs 10 -out DEGs_blastx.txt -num_threads 4 -outfmt 6 -max_hsps 1 
 tblastn -query GCF_000504015.1_Mimgu1_0_protein.faa -db tilingii -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out genes_of_interest_gutt_to_til.txt
 
 
