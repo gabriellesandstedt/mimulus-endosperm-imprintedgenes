@@ -1,8 +1,15 @@
 # this script is unfinished, just writing my general workflow down # 
 wget ftp://ftp.ncbi.nlm.nih.gov//genomes/refseq/plant/Erythranthe_guttata/all_assembly_versions/GCF_000504015.1_Mimgu1_0/GCF_000504015.1_Mimgu1_0_protein.faa.gz
 gunzip /scratch/gds44474/MIMULUS/snps_parents_til/data/blastx_db/GCF_000504015.1_Mimgu1_0_protein.faa.gz
-makeblastdb -in /scratch/gds44474/MIMULUS/snps_parents_til/data/blastn_db/GCF_000504015.1_Mimgu1_0_protein.faa -dbtype prot
-blastx -query shared_34_MEGs.fasta -db /scratch/gds44474/MIMULUS/snps_parents_til/data/blastx_db/GCF_000504015.1_Mimgu1_0_protein.faa  -evalue 1e-10 -max_target_seqs 10 -out shared_34_MEGs_blastx.txt -num_threads 4 -outfmt 6 -max_hsps 1 
+
+
+
+makeblastdb -in GCF_000504015.1_Mimgu1_0_protein.faa -dbtype prot
+blastx -query  genes_of_interest.fasta -db GCF_000504015.1_Mimgu1_0_protein.faa -evalue 1e-10 -max_target_seqs 10 -out genes_of_interest_til_to_gutt.txt -num_threads 4 -outfmt 6 -max_hsps 1 
+tblastn -query GCF_000504015.1_Mimgu1_0_protein.faa -db tilingii -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out genes_of_interest_gutt_to_til.txt
+python find_recip_hits.py > recip_til_AT.txt
+
+
 
 wget 
 gunzip Araport11_pep_20220914_representative_gene_model.gz
