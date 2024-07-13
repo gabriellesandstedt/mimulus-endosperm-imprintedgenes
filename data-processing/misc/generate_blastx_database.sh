@@ -5,11 +5,14 @@ gunzip /scratch/gds44474/MIMULUS/snps_parents_til/data/blastx_db/GCF_000504015.1
 makeblastdb -in GCF_000504015.1_Mimgu1_0_protein.faa -dbtype prot
 # diff expression
 # tilingii higher:
+
+makeblastdb -in all_DEGs.fasta -dbtype nucl
+
 blastx -query all_DEGs.fasta -db GCF_000504015.1_Mimgu1_0_protein.faa -evalue 1e-10 -max_target_seqs 1 -out DEGs_blastx.txt -num_threads 4 -outfmt 6 -max_hsps 1 
-tblastn -query GCF_000504015.1_Mimgu1_0_protein.faa -db tilingii -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out genes_of_interest_gutt_to_til.txt -max_hsps 1 
+tblastn -query GCF_000504015.1_Mimgu1_0_protein.faa -db all_DEGs.fasta -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out genes_of_interest_gutt_to_til_degs.txt -max_hsps 1 
 
 
-
+makeblastdb -in genes_of_interest.fasta -dbtype nucl -out tilingii
 blastx -query  genes_of_interest.fasta -db GCF_000504015.1_Mimgu1_0_protein.faa -evalue 1e-10 -max_target_seqs 1 -out genes_of_interest_til_to_gutt.txt -num_threads 4 -outfmt 6 -max_hsps 1 
 tblastn -query GCF_000504015.1_Mimgu1_0_protein.faa -db tilingii -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out genes_of_interest_gutt_to_til.txt
 python find_recip_hits.py > recip_til_AT.txt
