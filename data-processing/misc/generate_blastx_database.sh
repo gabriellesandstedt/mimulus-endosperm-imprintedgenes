@@ -73,5 +73,11 @@ blastn -query genes_of_interest.fasta -db sol -evalue 1e-10 -max_target_seqs 1 -
 blastn -query Slycopersicum_225_cds.fa -db tilingii -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out sol_to_til.txt
 python find_recip_hits.py > sol_til_recip_hits.txt
 
+ml BLAST+/2.10.1-gompi-2022a
+gunzip Araport11_pep_20220914_representative_gene_model.gz
+makeblastdb -in /scratch/gds44474/MIMULUS/snps_parents_til/data/tair_protein/Araport11_pep_20220914_representative_gene_model -dbtype prot
+blastx -query genes_of_interest.fasta -db /scratch/gds44474/MIMULUS/snps_parents_til/data/tair_protein/Araport11_pep_20220914_representative_gene_model  -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out til_to_AT.txt
+tblastn -query /scratch/gds44474/MIMULUS/snps_parents_til/data/tair_protein/Araport11_pep_20220914_representative_gene_model -db tilingii -evalue 1e-10 -max_target_seqs 1 -num_threads 4 -outfmt 6 -out AT_to_til.txt
+python find_recip_hits.py > recip_til_AT.txt
 
 
