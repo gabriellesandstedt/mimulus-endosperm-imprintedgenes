@@ -27,7 +27,7 @@ def extract_sequences(fasta_file, genes_of_interest_file, output_file):
 # genes_of_interest_file.txt includes a text file with a list of the gene names 
 # specify the output file with output.fasta
 fasta_file = 'all_genes_fasta.fa'
-genes_of_interest_file = 'genes_of_interest.txt'
-output_file = 'genes_of_interest.fasta'
+genes_of_interest_file = 'high_conf_caes_PEGs.txt'
+output_file = 'high_conf_caes_PEGs.fasta'
 
 extract_sequences(fasta_file, genes_of_interest_file, output_file)
