@@ -26,7 +26,7 @@ tblastn -query /scratch/gds44474/MIMULUS/snps_parents_til/data/tair_protein/Arap
 
 # Determine reciprocal hits
 echo "finding reciprocal hits with Python script..."
-python find_recip_hits.py > recip_til_AT.txt
+python /scratch/gds44474/MIMULUS/snps_parents_til/data/find_recip_hits.py > recip_til_AT.txt
 
 echo "done"
 
