@@ -22,7 +22,7 @@ samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", 
 # define all output files in rule all 
 rule all:
     input:
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_LVR_V1_MD_Split_Q60_NS.bam" , sample=samples),
+        expand(f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60_NS.bam" , sample=samples),
         expand(f"{star_pass2_dir}/{{sample}}_HTSeq_gene_counts.txt", sample=samples),
         f"{star_pass2_dir}/merged_counts.txt",
         f"{star_pass2_dir}/merged_gene_counts.txt" 
