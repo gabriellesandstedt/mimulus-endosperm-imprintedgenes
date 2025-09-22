@@ -52,7 +52,7 @@ rule sort_and_index_bam:
         sorted_bai=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1.bam.bai"
     shell:
         """
-        module load SAMtools/1.21-GCC-13.3.0
+        module load SAMtools/1.16.1-GCC-11.3.0
         samtools view -hu -F 2820 {input.bam} | samtools sort -O bam -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
         samtools index {output.sorted_bam}
         """
@@ -95,7 +95,7 @@ rule filter_unique_reads:
         filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60.bam"
     shell:
         """
-        module load SAMtools/1.21-GCC-13.3.0
+        module loadSAMtools/1.16.1-GCC-11.3.0
         samtools view -hu -q 60 {input.split_bam} | samtools sort -O bam -o {output.filtered_bam} -T {output.filtered_bam}.tmp -
         samtools index {output.filtered_bam}
         """
@@ -107,6 +107,6 @@ rule flagstat_quality_check:
         filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60.bam"
     shell:
         """
-        module load SAMtools/1.21-GCC-13.3.0
+        module load SAMtools/1.16.1-GCC-11.3.0
         samtools flagstat {input.filtered_bam}
         """
