@@ -10,7 +10,7 @@
 import os 
 
 # assign directories
-star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2"
+star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2/sept_2025"
 repeat_masker_dir = "/scratch/gds44474/MIMULUS/ref_genome_til/RepeatMasker"
 
 # assign samples
