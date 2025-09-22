@@ -36,7 +36,7 @@ rule index_reference:
         ref_index=f"{repeat_masker_dir}/{masked_ref2}.dict"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk CreateSequenceDictionary \
             -R {input.masked_fa2} \
             -O {output.ref_index}
@@ -52,7 +52,7 @@ rule sort_and_index_bam:
         sorted_bai=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1.bam.bai"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/0.1.20-GCC-11.3.0
         samtools view -hu -F 2820 {input.bam} | samtools sort -O bam -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
         samtools index {output.sorted_bam}
         """
@@ -68,7 +68,7 @@ rule mark_duplicates:
         metrics_file=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD.txt"
     shell:
         """
-        module load picard/2.27.4-Java-13.0.2
+        module load picard/3.3.0-Java-17
         java -jar $EBROOTPICARD/picard.jar MarkDuplicates INPUT={input.sorted_bam} OUTPUT={output.MD_bam} METRICS_FILE={output.metrics_file} REMOVE_DUPLICATES=FALSE CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT ASSUME_SORT_ORDER=coordinate
         """
 
@@ -82,7 +82,7 @@ rule split_trim_reads:
         split_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split.bam"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-8.3.0-Java-17.0.4
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk SplitNCigarReads -I {input.MD_bam} -O {output.split_bam} -R {input.masked_fa2}
         """
 
@@ -95,7 +95,7 @@ rule filter_unique_reads:
         filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60.bam"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/0.1.20-GCC-11.3.0
         samtools view -hu -q 60 {input.split_bam} | samtools sort -O bam -o {output.filtered_bam} -T {output.filtered_bam}.tmp -
         samtools index {output.filtered_bam}
         """
@@ -107,6 +107,6 @@ rule flagstat_quality_check:
         filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_LVR_v1_MD_Split_Q60.bam"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/0.1.20-GCC-11.3.0
         samtools flagstat {input.filtered_bam}
         """
