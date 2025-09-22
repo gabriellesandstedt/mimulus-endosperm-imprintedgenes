@@ -42,7 +42,7 @@ rule index_reference:
             -O {output.ref_index}
         """
         
-# define rule to remove secondary alignments (-F 524) and sort bam files 
+# define rule to remove unmapped (4), QC-fail (512), secondary (256), supplementary (2048) and sort bam files 
 # samtools v 1.16: https://github.com/samtools/samtools
 rule sort_and_index_bam:
     input:
@@ -53,9 +53,10 @@ rule sort_and_index_bam:
     shell:
         """
         module load SAMtools/1.16.1-GCC-11.3.0
-        samtools view -hu -F 524 {input.bam} | samtools sort -O bam -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
+        samtools view -hu -F 2820 {input.bam} | samtools sort -O bam -o {output.sorted_bam} -T {output.sorted_bam}.tmp -
         samtools index {output.sorted_bam}
         """
+
 
 # define rule to mark duplicates
 # picard v 2.27: https://broadinstitute.github.io/picard/
