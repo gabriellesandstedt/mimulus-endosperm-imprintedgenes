@@ -34,3 +34,14 @@ for bam in "${files[@]}"; do
 done
 
 echo "Done."
+
+
+
+for bam in *STAR_LVR_v1_MD_Split_Q60.noSH.bam; do
+  out="${bam%.bam}.pp.bam"   # output name: add .q30.pp
+  echo "[*] Filtering $bam -> $out"
+  samtools view  -f 0x2 -b -h "$bam" > "$out"
+  samtools index "$out"
+done
+
+echo "All done."
