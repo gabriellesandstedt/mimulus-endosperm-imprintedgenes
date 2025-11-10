@@ -15,7 +15,7 @@ ref_dir="/scratch/gds44474/MIMULUS/caes_genome"
 repeatmasker_dir="/scratch/gds44474/MIMULUS/caes_genome/RepeatMasker"
 STAR_genome_dir="/scratch/gds44474/MIMULUS/caes_genome/RepeatMasker/STARgenome"
 data_dir="/scratch/gds44474/MIMULUS/caes_genome/data"
-star_pass2_dir="/scratch/gds44474/MIMULUS/caes_genome//data/star_pass2"
+star_pass2_dir="/scratch/gds44474/MIMULUS/caes_genome/data/star_pass2"
 
 # assign genome files
 ref = "Mimulus_caespitosa_var_TWN36.mainGenome.fasta"
@@ -43,7 +43,7 @@ rule repeatmasker:
         repmask_dir = directory(repeatmasker_dir)
     shell:
         """
-        ml RepeatMasker/4.1.2-p1-foss-2020b
+        ml RepeatMasker/4.1.9-foss-2023a
         RepeatMasker {input.ref_genome} -species Erythranthe -dir {output.repmask_dir}
         """
 
@@ -68,7 +68,7 @@ rule create_star_index:
         genome_dir = directory(STAR_genome_dir)
     shell:
         """
-        ml STAR/2.7.10a-GCC-8.3.0
+        ml STAR/2.7.11b-GCC-13.3.0
         STAR --runThreadN 12 --runMode genomeGenerate --genomeDir {output.genome_dir} --genomeFastaFiles {input.masked_fa2} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --genomeSAindexNbases 13 --sjdbGTFtagExonParentGene Parent
         """
 
@@ -85,7 +85,7 @@ rule star_alignment_pass1:
         sj=f"{data_dir}/{{sample}}.SJ.out.tab"
     shell:
         """
-        ml STAR/2.7.10a-GCC-8.3.0
+        ml STAR/2.7.11b-GCC-13.3.0
         STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:IM62.v3 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
         """
 
@@ -104,6 +104,6 @@ rule star_alignment_pass2:
         sj2=f"{star_pass2_dir}/{{sample}}.SJ.out.tab"
     shell:
         """
-        ml STAR/2.7.10a-GCC-8.3.0
+        ml STAR/2.7.11b-GCC-13.3.0
         STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.sj_files} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass2_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq
         """
