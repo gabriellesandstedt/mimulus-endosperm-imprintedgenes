@@ -135,7 +135,7 @@ rule qualimap:
     input:
         CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
     output:
-        quali_bam={{sample}}_bamQC.pdf"
+        quali_bam=f"{data_dir}/{{sample}}_bamQC.pdf"
     shell:
         """
         module load Qualimap/2.2.1-foss-2019b-R-3.6.2
