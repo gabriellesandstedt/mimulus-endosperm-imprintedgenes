@@ -232,8 +232,8 @@ rule filt_dp_til:
         """ 
         
 # assign rule to filter by depth of caespitosa samples 
-# mean covg UTC1: 5.3877X ; SD: 66.0901X , 138X
-# mean covg TWN36: 6.8621X ; SD: 88.0176X, 183X
+# mean covg UTC1: 5.8009X ; SD: 41.4043X , 90X
+# mean covg TWN36: 8.5451X ; SD: 50.814X, 111X
 # max DP = 2 x SD + mean 
 rule filt_dp_caes:
     input:
