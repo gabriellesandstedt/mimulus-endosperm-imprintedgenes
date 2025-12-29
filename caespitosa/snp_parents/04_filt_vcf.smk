@@ -245,8 +245,8 @@ rule filt_dp_caes:
     shell:
         """
         module load VCFtools/0.1.16-GCC-13.3.0
-        vcftools --vcf {input.UTC1_vcf} --maxDP 138  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
-        vcftools --vcf {input.TWN36_vcf} --maxDP 183  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
+        vcftools --vcf {input.UTC1_vcf} --maxDP 90  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
+        vcftools --vcf {input.TWN36_vcf} --maxDP 111  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
         """     
 
 # assign rule to bgzip and index all vcfs 
