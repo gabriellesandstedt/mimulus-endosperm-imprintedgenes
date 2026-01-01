@@ -58,10 +58,10 @@ rule select_biallelic_snps_caes:
   
  # assign rule to convert vcf to a table to assess quality filtering thresholds
  # problems with java compatability -- had to use different GATK version 
- rule variant_table_til:
+rule variant_table_til:
     input:
         ref=f"{ref_dir}/{ref}",
-        biallelic_vcf=f"{data_dir}/til_biallelic_snps.vcf",
+        biallelic_vcf=f"{data_dir}/til_biallelic_snps.vcf"
     output:
         table=f"{data_dir}/til_variant.table"
     shell:
@@ -72,13 +72,12 @@ rule select_biallelic_snps_caes:
             -V {input.biallelic_vcf} \
             -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
             -O {output.table}
-        """
-        
-# assign rule to convert vcf to a table to assess quality filtering thresholds
-  rule variant_table_caes:
+        """      
+
+rule variant_table_caes:
     input:
         ref=f"{ref_dir}/{ref}",
-        biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf",
+        biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf"
     output:
         table=f"{data_dir}/caes_variant.table"
     shell:
@@ -89,7 +88,7 @@ rule select_biallelic_snps_caes:
             -V {input.biallelic_vcf} \
             -F CHROM -F POS -F QUAL -F QD -F DP -F MQ -F MQRankSum -F FS -F ReadPosRankSum -F SOR -F AD \
             -O {output.table}
-        """       
+        """      
         
 # assign rule to filter tilingii vcf 
 rule filter_variants_til:
