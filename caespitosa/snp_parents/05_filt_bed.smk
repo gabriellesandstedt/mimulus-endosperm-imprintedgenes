@@ -9,11 +9,11 @@
 ################################################################################
 
 # assign directories
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
+data_dir = "/scratch/gds44474/MIMULUS/caes_genome/data/snp_caes"
+ref_dir = "/scratch/gds44474/MIMULUS/caes_genome"
 
 # assign files 
-gff3= "MtilingiivarLVRv1.1.primaryTrs.gff3"
+gff3= "McaespitosavarTWN36v1.1.primaryTrs.gff3"
 
 
 # assign rule for all expected output files from this script 
@@ -33,7 +33,7 @@ rule gff_to_bed:
         genes_bed=f"{data_dir}/genes.bed"
     shell:
         """
-        module load BEDOPS/2.4.41-foss-2021b
+        module load BEDOPS/2.4.41-foss-2023a
         gff2bed < {input.gff} > {output.genes_bed}
         """ 
 
@@ -47,7 +47,7 @@ rule modify_caes_bed:
         final_caes_bed=f"{data_dir}/final_caes.bed"
     shell:
         """
-        module load BEDTools/2.30.0-GCC-12.2.0
+        module load BEDTools/2.31.1-GCC-13.3.0
 
         awk 'BEGIN{{OFS="\t"}} {{
             if (FNR == 0) print
@@ -75,7 +75,7 @@ rule modify_til_bed:
         final_til_bed=f"{data_dir}/final_til.bed"
     shell:
         """
-        module load BEDTools/2.30.0-GCC-12.2.0
+        module load BEDTools/2.31.1-GCC-13.3.0
 
         awk 'BEGIN{{OFS="\t"}} {{
             if (FNR == 0) print
