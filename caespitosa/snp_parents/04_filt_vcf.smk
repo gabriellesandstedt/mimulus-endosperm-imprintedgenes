@@ -350,7 +350,7 @@ rule vcfs_to_bed:
         final_caes_bed=f"{data_dir}/caes.bed"
     shell:
         """
-        module load BEDOPS/2.4.41-foss-2021b
+        module load BEDOPS/2.4.41-foss-2023a
         vcf2bed < {input.final_til_vcf} > {output.final_til_bed}
         vcf2bed < {input.final_caes_vcf} > {output.final_caes_bed}
         """ 
