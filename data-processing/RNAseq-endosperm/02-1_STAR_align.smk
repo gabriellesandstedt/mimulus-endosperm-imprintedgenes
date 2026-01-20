@@ -69,9 +69,11 @@ rule merge_sj_tabs:
         pooled = f"{data_dir}/AllSamples.SJ.out.tab"
     shell:
         r"""
-        # Keep only non-empty, non-header lines; STAR SJ.out.tab is 9 columns
+        # Pool, validate, sort, and deduplicate splice junctions
         cat {input.sj_tabs} \
           | awk 'NF==9' \
+          | sort -k1,1 -k2,2n -k3,3n -k4,4n \
+          | uniq \
           > {output.pooled}
         """
 
