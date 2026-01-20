@@ -26,28 +26,26 @@ samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", 
 # define all output files to rule all
 rule all:
     input:
-        expand(f"{data_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples),
-        f"{data_dir}/AllSamples.SJ.out.tab",
-        expand(f"{star_pass_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples)
+        expand(f"{data_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples)
 
-# define rule to index the masked genome for STAR alignment
-# STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
 rule create_star_index:
     input:
         fa = f"{data_dir}/{ref}",
         gtf = f"{data_dir}/{gtf}"
     output:
         genome_sentinel = f"{STAR_genome_dir}/Genome"
+    threads: 4
     shell:
         """
         ml STAR/2.7.10b-GCC-11.3.0
         mkdir -p {STAR_genome_dir}
-        STAR --runThreadN 4 --runMode genomeGenerate --genomeDir {STAR_genome_dir} --genomeFastaFiles {input.fa} --sjdbGTFfile {input.gtf} --sjdbGTFfeatureExon exon --genomeSAindexNbases 13 --sjdbOverhang 149
+        STAR --runThreadN {threads} --runMode genomeGenerate \
+             --genomeDir {STAR_genome_dir} --genomeFastaFiles {input.fa} \
+             --sjdbGTFfile {input.gtf} \
+             --genomeSAindexNbases 13 --sjdbOverhang 149
         """
 
-# define rule to align fastqs to masked reference genome
-# STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
-rule star_alignment_pass1:
+rule star_alignment_2pass_basic:
     input:
         genome_sentinel = f"{STAR_genome_dir}/Genome",
         rd1=f"{data_dir}/{{sample}}_R1_trim.fastq.gz",
@@ -56,44 +54,23 @@ rule star_alignment_pass1:
         bam=f"{data_dir}/{{sample}}.Aligned.sortedByCoord.out.bam",
         log_final=f"{data_dir}/{{sample}}.Log.final.out",
         sj=f"{data_dir}/{{sample}}.SJ.out.tab"
+    params:
+        prefix = f"{data_dir}/{{sample}}."
+    threads: 4
     shell:
         """
         ml STAR/2.7.10b-GCC-11.3.0
-        STAR --runThreadN 4 --genomeDir {STAR_genome_dir}  --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
-        """
-
-rule merge_sj_tabs:
-    input:
-        sj_tabs = expand(f"{data_dir}/{{sample}}.SJ.out.tab", sample=samples)
-    output:
-        pooled = f"{data_dir}/AllSamples.SJ.out.tab"
-    shell:
-        r"""
-        # Pool, validate, sort, and deduplicate splice junctions
-        # Keep junctions with ≥1 uniquely mapped read (STAR SJ.out.tab col 7)
-        cat {input.sj_tabs} \
-          | awk 'NF==9 && $7 >= 1' \
-          | sort -k1,1 -k2,2n -k3,3n -k4,4n \
-          | uniq \
-          > {output.pooled}
-        """
-
-# define rule to align fastqs to masked reference genome using SJ.out.tab files, which contain info on split junctions 
-# this is a second pass at the STAR alignment to improve alignment quality 
-# STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
-rule star_alignment_pass2:
-    input:
-        genome_sentinel = f"{STAR_genome_dir}/Genome",
-        rd1 = f"{data_dir}/{{sample}}_R1_trim.fastq.gz",
-        rd2 = f"{data_dir}/{{sample}}_R2_trim.fastq.gz",
-        pooled_sj = f"{data_dir}/AllSamples.SJ.out.tab"
-    output:
-        bam2=f"{star_pass_dir}/{{sample}}.Aligned.sortedByCoord.out.bam",
-        log_final2=f"{star_pass_dir}/{{sample}}.Log.final.out",
-        sj2=f"{star_pass_dir}/{{sample}}.SJ.out.tab"
-    shell:
-        """
-        ml STAR/2.7.10b-GCC-11.3.0
-        mkdir -p {star_pass_dir}
-        STAR --runThreadN 4 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.pooled_sj} --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
+        STAR --runThreadN {threads} \
+             --genomeDir {STAR_genome_dir} \
+             --twopassMode Basic \
+             --readFilesCommand zcat \
+             --readFilesIn {input.rd1} {input.rd2} \
+             --alignIntronMin 20 \
+             --alignIntronMax 10000 \
+             --outFilterMismatchNoverReadLmax 0.05 \
+             --outSAMmapqUnique 60 \
+             --outFileNamePrefix {params.prefix} \
+             --outSAMtype BAM SortedByCoordinate \
+             --outSAMattributes All \
+             --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 SM:{wildcards.sample} PL:Illumina
         """
