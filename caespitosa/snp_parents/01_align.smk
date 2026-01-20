@@ -11,11 +11,11 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/caes_genome/data/snp_caes"
-ref_dir = "/scratch/gds44474/MIMULUS/caes_genome"
+data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
+ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
 # reference genome: Mimulus tilingii, LVR v1
-ref = "Mimulus_caespitosa_var_TWN36.mainGenome.fasta"
+ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
 
 # assign samples to be aligned
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
