@@ -17,7 +17,7 @@ data_dir="/scratch/gds44474/MIMULUS/til_rnaseq"
 star_pass_dir="/scratch/gds44474/MIMULUS/til_rnaseq/star_pass"
 
 # assign genome files
-ref = "Mtilingiivar_LVR_860_v1.0.fa.gz"
+ref = "Mtilingiivar_LVR_860_v1.0.fa"
 gff = "Mtilingiivar_LVR_860_v1.1.gene_exons.gff3"
 
 # assign samples
@@ -27,7 +27,7 @@ samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", 
 rule all:
     input:
         expand(f"{data_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples),
-        expand(f"{star_pass2_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples)
+        expand(f"{star_pass_dir}/{{sample}}.Aligned.sortedByCoord.out.bam", sample=samples)
 
 # define rule to index the masked genome for STAR alignment
 # STAR v 2.7 : https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf
@@ -40,7 +40,7 @@ rule create_star_index:
     shell:
         """
         ml STAR/2.7.10b-GCC-11.3.0
-        STAR --runThreadN 12 --runMode genomeGenerate --genomeDir {output.genome_dir} --genomeFastaFiles {input.fa} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon exon --sjdbGTFtagExonParentTranscript Parent --genomeSAindexNbases 13 --sjdbGTFtagExonParentGene Parent
+        STAR --runThreadN 12 --runMode genomeGenerate --genomeDir {output.genome_dir} --genomeFastaFiles {input.fa} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon exon --sjdbGTFtagExonParentTranscript Parent --genomeSAindexNbases 13 --sjdbGTFtagExonParentGene Parent --sjdbOverhang 149
         """
 
 # define rule to align fastqs to masked reference genome
@@ -57,7 +57,7 @@ rule star_alignment_pass1:
     shell:
         """
         ml STAR/2.7.10b-GCC-11.3.0
-        STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon exon --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
+        STAR --runThreadN 12 --genomeDir {STAR_genome_dir}  --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
         """
 
 # define rule to align fastqs to masked reference genome using SJ.out.tab files, which contain info on split junctions 
@@ -76,5 +76,5 @@ rule star_alignment_pass2:
     shell:
         """
         ml STAR/2.7.10b-GCC-11.3.0
-        STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.sj_files} --sjdbGTFfile {input.gff} --sjdbGTFfeatureExon exon --sjdbGTFtagExonParentTranscript Parent --sjdbGTFtagExonParentGene Parent --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq
+        STAR --runThreadN 12 --genomeDir {STAR_genome_dir} --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq
         """
