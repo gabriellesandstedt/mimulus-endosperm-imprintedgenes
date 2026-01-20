@@ -21,7 +21,7 @@ star_pass2_dir="/scratch/gds44474/MIMULUS/caes_genome/data/star_pass2"
 ref = "Mimulus_caespitosa_var_TWN36.mainGenome.fasta"
 masked_ref = "Mimulus_caespitosa_var_TWN36.mainGenome.fasta.masked"
 masked_ref2 = "Mimulus_caespitosa_var_TWN36.mainGenome.masked.fasta"
-gff = "MtilingiivarLVRv1.1.primaryTrs.gff3"
+gff = "McaespitosavarTWN36v1.1.primaryTrs.gff3"
 
 # assign samples
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
