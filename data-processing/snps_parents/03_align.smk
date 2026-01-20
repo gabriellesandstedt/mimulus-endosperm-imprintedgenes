@@ -70,7 +70,7 @@ rule sam_bam_q29:
         bam = f"{data_dir}/{{sample}}.bam"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         samtools view -q 29 -b {input.sam} > {output.bam}
         echo -e "\\n["$(date)"]\\n reads with map quality <29 are removed..\\n"
         """
@@ -85,7 +85,7 @@ rule sort_bam:
         index_sorted=f"{data_dir}/{{sample}}_sorted.bam.bai"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         samtools sort {input.bam} -o {output.sorted_bam}
         samtools index {output.sorted_bam}
         echo -e "\\n["$(date)"]\\n bam file is sorted ..\\n"
