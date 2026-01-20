@@ -40,7 +40,7 @@ rule bwa_index:
         pac = "{ref}.pac"
     shell:
         """
-        module load BWA/0.7.17-GCC-10.3.0
+        module load BWA/0.7.17-GCCcore-11.3.0
         bwa index -a bwtsw {input.ref}
         echo -e "\n["$(date)"]\n done ...\n"
         """
@@ -56,7 +56,7 @@ rule bwa_mem:
         sam = f"{data_dir}/{{sample}}.sam"
     shell:
         """
-        module load BWA/0.7.17-GCC-10.3.0
+        module load BWA/0.7.17-GCCcore-11.3.0
         echo -e "\\n["$(date)"]\\n run BWA mem..\\n"
         bwa mem {input.ref} {input.trim_fq_r1} {input.trim_fq_r2} > {output.sam}
         """
