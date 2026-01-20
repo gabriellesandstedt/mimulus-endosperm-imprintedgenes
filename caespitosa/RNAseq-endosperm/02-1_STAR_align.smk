@@ -17,8 +17,8 @@ data_dir="/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 star_pass_dir="/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq/star_pass"
 
 # assign genome files
-ref = "Mtilingiivar_LVR_860_v1.0.fa"
-gtf = "Mtilingiivar_LVR_860_v1.1.gene_exons.gtf"
+ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
+gtf = "Mcaespitosavar_TWN36_992_v1.1.gene_exon.gtf"
 
 # assign samples
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
@@ -59,7 +59,7 @@ rule star_alignment_pass1:
     shell:
         """
         ml STAR/2.7.10b-GCC-11.3.0
-        STAR --runThreadN 4 --genomeDir {STAR_genome_dir}  --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
+        STAR --runThreadN 4 --genomeDir {STAR_genome_dir}  --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outSAMmapqUnique 60 --outFileNamePrefix {data_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:TWN.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
         """
 
 rule merge_sj_tabs:
@@ -94,5 +94,5 @@ rule star_alignment_pass2:
         """
         ml STAR/2.7.10b-GCC-11.3.0
         mkdir -p {star_pass_dir}
-        STAR --runThreadN 4 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.pooled_sj} --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:LVR.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
+        STAR --runThreadN 4 --genomeDir {STAR_genome_dir} --sjdbFileChrStartEnd {input.pooled_sj} --readFilesCommand zcat --readFilesIn {input.rd1} {input.rd2} --alignIntronMin 20 --alignIntronMax 10000 --outFilterMismatchNoverReadLmax 0.05 --outFileNamePrefix {star_pass_dir}/{wildcards.sample}. --outSAMtype BAM SortedByCoordinate --outSAMmapqUnique 60 --outSAMattributes All --outSAMattrRGline ID:{wildcards.sample} LB:TWN.v1 DS:RNAseq PU:NovaSeq6000 PL:Illumina SM:{wildcards.sample}
         """
