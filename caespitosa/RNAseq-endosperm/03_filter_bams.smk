@@ -10,19 +10,19 @@
 import os 
 
 # assign directories
-star_pass2_dir = "/scratch/gds44474/MIMULUS/caes_genome/data/star_pass2"
-repeat_masker_dir = "/scratch/gds44474/MIMULUS/caes_genome/RepeatMasker"
+star_pass2_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq/star_pass"
+ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
 # assign samples
 samples = ["13_S17", "41_S24", "50_S30", "15_S7", "39_S23", "46_S26", "35_S10", "52_S15", "45_S14", "31_S8", "33_S22", "48_S28", "44_S13", "47_S27", "32_S21", "36_S11", "34_S9", "53_S16", "49_S29"]
 
 # assign reference genome
-masked_ref2 = "Mimulus_caespitosa_var_TWN36.mainGenome.masked.fasta"
+ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
 
 # define all output files to rule all
 rule all:
     input:
-        f"{repeat_masker_dir}/{masked_ref2}.dict",
+        f"{ref_dir}/{ref}.dict",
         expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1.bam", sample=samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD.bam", sample=samples),
         expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam", sample=samples),
@@ -31,14 +31,14 @@ rule all:
 # create index file for reference genome
 rule index_reference:
     input:
-        masked_fa2=f"{repeat_masker_dir}/{masked_ref2}"
+        fa2=f"{ref_dir}/{ref}"
     output:
-        ref_index=f"{repeat_masker_dir}/{masked_ref2}.dict"
+        ref_index=f"{ref_dir}/{ref}.dict"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk CreateSequenceDictionary \
-            -R {input.masked_fa2} \
+            -R {input.fa2} \
             -O {output.ref_index}
         """
         
@@ -77,13 +77,13 @@ rule mark_duplicates:
 rule split_trim_reads:
     input:
         MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD.bam",
-        masked_fa2 = f"{repeat_masker_dir}/{masked_ref2}"
+        fa2 = f"{ref_dir}/{ref}"
     output:
         split_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
-        gatk SplitNCigarReads -I {input.MD_bam} -O {output.split_bam} -R {input.masked_fa2}
+        gatk SplitNCigarReads -I {input.MD_bam} -O {output.split_bam} -R {input.fa2}
         """
 
 # define rule to filter reads with a MAPQ score below 60
