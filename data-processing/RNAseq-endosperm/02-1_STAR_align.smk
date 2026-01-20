@@ -70,8 +70,9 @@ rule merge_sj_tabs:
     shell:
         r"""
         # Pool, validate, sort, and deduplicate splice junctions
+        # Keep junctions with ≥1 uniquely mapped read (STAR SJ.out.tab col 7)
         cat {input.sj_tabs} \
-          | awk 'NF==9' \
+          | awk 'NF==9 && $7 >= 1' \
           | sort -k1,1 -k2,2n -k3,3n -k4,4n \
           | uniq \
           > {output.pooled}
