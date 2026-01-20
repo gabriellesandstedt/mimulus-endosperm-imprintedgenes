@@ -12,9 +12,9 @@ import os
 
 ### this v2 script does not deal with masking genome ####
 # assign directories
-STAR_genome_dir="/scratch/gds44474/MIMULUS/til_rnaseq/STARgenome"
-data_dir="/scratch/gds44474/MIMULUS/til_rnaseq"
-star_pass_dir="/scratch/gds44474/MIMULUS/til_rnaseq/star_pass"
+STAR_genome_dir="/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq/STARgenome"
+data_dir="/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
+star_pass_dir="/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq/star_pass"
 
 # assign genome files
 ref = "Mtilingiivar_LVR_860_v1.0.fa"
