@@ -10,11 +10,11 @@
 import os
 
 # assign directories
-star_pass2_dir = "/scratch/gds44474/MIMULUS/caes_genome/data/star_pass2"
-ref_dir="/scratch/gds44474/MIMULUS/caes_genome"
+star_pass2_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
+ref_dir="/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
 # assign gff
-gff = "McaespitosavarTWN36v1.1.primaryTrs.gff3"
+gff = "Mcaespitosavar_TWN36_992_v1.1.gene_exon.gff3"
 
 def get_output_filenames():
     prefix_mapping = {
@@ -48,7 +48,7 @@ rule gff3_to_gtf:
     input:
         gff=f"{ref_dir}/{gff}"
     output:
-        gtf=f"McaespitosavarTWN36v1.1.primaryTrs.gff3"
+        gtf=f"Mcaespitosavar_TWN36_992_v1.1.gene_exon.gtf"
     shell:
         """
         ml gffread/0.12.7-GCCcore-12.3.0
