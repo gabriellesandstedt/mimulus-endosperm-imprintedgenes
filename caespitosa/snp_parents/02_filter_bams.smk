@@ -11,7 +11,7 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/caes_genome/data/snp_caes"
+data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
 # assign sample names of bam files to be filtered
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
