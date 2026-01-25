@@ -48,7 +48,7 @@ rule gff3_to_gtf:
     input:
         gff=f"{ref_dir}/{gff}"
     output:
-        gtf=f"Mtilingiivar_LVR_860_v1.1.gene_exons.gff3"
+        gtf=f"Mtilingiivar_LVR_860_v1.1.gene_exons.gtf"
     shell:
         """
         ml gffread/0.12.7-GCCcore-12.3.0
