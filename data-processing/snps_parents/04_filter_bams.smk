@@ -11,7 +11,7 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
+data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 
 # assign sample names of bam files to be filtered
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
@@ -38,8 +38,8 @@ rule add_or_replace_read_groups:
         RG_bai=f"{data_dir}/{{sample}}_RG.bam.bai"
     shell:
         """
-        module load picard/2.27.4-Java-13.0.2
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load picard/3.3.0-Java-17
+        module load SAMtools/1.21-GCC-13.3.0
         echo -e "\\n["$(date)"]\\n Add read groups..\\n"
         java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups \
             I={input.bam} \
@@ -64,8 +64,8 @@ rule mark_duplicates:
         MD_bai=f"{data_dir}/{{sample}}_RG_MD.bam.bai"
     shell:
         """
-        module load picard/2.27.4-Java-13.0.2
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load picard/3.3.0-Java-17
+        module load SAMtools/1.21-GCC-13.3.0
         echo -e "\\n["$(date)"]\\n mark and remove duplicates..\\n"
         java -jar $EBROOTPICARD/picard.jar MarkDuplicates I={input.RG_bam} O={output.MD_bam} REMOVE_DUPLICATES=TRUE M={output.MD_log}
         samtools index {output.MD_bam}
@@ -80,7 +80,7 @@ rule namesort:
         NS_bam=f"{data_dir}/{{sample}}_RG_MD_NS.bam"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         echo -e "\\n["$(date)"]\\n sort bam by name...\\n"
         samtools sort -o {output.NS_bam} -n {input.MD_bam}
         """
@@ -94,7 +94,7 @@ rule fixmate:
         FM_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM.bam"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         echo -e "\\n["$(date)"]\\n run samtools fixmate...\\n"
         samtools fixmate -r {input.NS_bam} {output.FM_bam}
         """
@@ -108,7 +108,7 @@ rule proper_pair:
         PP_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP.bam"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         echo -e "\\n["$(date)"]\\n ensure proper pairing...\\n"
         samtools view -b -f 2 -F 2048 {input.FM_bam} > {output.PP_bam}
         """    
@@ -123,7 +123,7 @@ rule coord_sort:
         CS_bai=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam.bai"
     shell:
         """
-        module load SAMtools/1.16.1-GCC-11.3.0
+        module load SAMtools/1.21-GCC-13.3.0
         echo -e "\\n["$(date)"]\\n sort bam by coordinate...\\n"
         samtools sort -o {output.CS_bam} {input.PP_bam}
         samtools index {output.CS_bam}
@@ -135,11 +135,9 @@ rule qualimap:
     input:
         CS_bam=f"{data_dir}/{{sample}}_RG_MD_NS_FM_PP_CS.bam"
     output:
-        quali_bam={{sample}}_bamQC.pdf"
+        quali_bam=f"{data_dir}/{{sample}}_bamQC.pdf"
     shell:
         """
         module load Qualimap/2.2.1-foss-2019b-R-3.6.2
         qualimap bamqc -bam {input.CS_bam} -outfile {output.quali_bam} 
         """
-
-
