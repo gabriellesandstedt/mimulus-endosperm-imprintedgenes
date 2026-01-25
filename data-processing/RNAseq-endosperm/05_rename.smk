@@ -1,5 +1,5 @@
 ################################################################################
-## extract caespitosa and tilingii feature counts
+## rename samples to species 
 ################################################################################
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
@@ -10,12 +10,11 @@
 import os
 
 # assign directories
-star_pass2_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/data/star_pass2"
-scripts_dir = "/scratch/gds44474/MIMULUS/RNAseq_endosperm_til/scripts"
-ref_dir="/scratch/gds44474/MIMULUS/ref_genome_til"
+star_pass2_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
+ref_dir="/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 
 # assign gff
-gff = "MtilingiivarLVRv1.1.primaryTrs.gff3"
+gff = "Mtilingiivar_LVR_860_v1.1.gene_exons.gff3"
 
 def get_output_filenames():
     prefix_mapping = {
@@ -49,11 +48,9 @@ rule gff3_to_gtf:
     input:
         gff=f"{ref_dir}/{gff}"
     output:
-        gtf=f"{ref_dir}/MtilingiivarLVRv1.1.primaryTrs.gtf"
+        gtf=f"Mtilingiivar_LVR_860_v1.1.gene_exons.gff3"
     shell:
         """
-        ml gffread/0.11.6-GCCcore-8.3.0
+        ml gffread/0.12.7-GCCcore-12.3.0
         gffread {input.gff} -T -o {output.gtf}
         """
-
-
