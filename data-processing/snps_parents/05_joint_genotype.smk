@@ -11,11 +11,11 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/snps_parents_til/data"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
+data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
+ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 
 # reference genome: Mimulus LVR1 v1 
-ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
+ref = "Mtilingiivar_LVR_860_v1.0.fa"
 # define interval list with list of chromosomes
 interval_list = "intervals.list"
 # assign samples
@@ -24,23 +24,24 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 # define all output files for rule all 
 rule all:
     input:
-        expand(f"{ref_dir}/Mimulus_tilingii_var_LVR.mainGenome.dict"),
+        expand(f"{ref_dir}/Mtilingiivar_LVR_860_v1.0.fa"),
         expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
         expand(f"{data_dir}/til.vcf"),
         expand(f"{data_dir}/caes.vcf")
 
-rule index_reference:
-    input:
-        ref = f"{ref_dir}/{ref}"
-    output:
-        index = f"{ref_dir}/Mimulus_tilingii_var_LVR.mainGenome.dict"
-    shell:
-        """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
-        gatk CreateSequenceDictionary \
-            -R {input.ref} \
-            -O {output.index}
-        """
+#this rule should be done during RNA seq analysis 
+#rule index_reference:
+#    input:
+#        ref = f"{ref_dir}/{ref}"
+#    output:
+#        index = f"{ref_dir}/Mtilingiivar_LVR_860_v1.0.dict"
+#    shell:
+#        """
+#        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
+#        gatk CreateSequenceDictionary \
+#            -R {input.ref} \
+#            -O {output.index}
+#        """
 
 # define rule to call potential variants for each sample
 rule hap_caller:
@@ -52,7 +53,7 @@ rule hap_caller:
         gvcf = f"{data_dir}/{{sample}}.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk HaplotypeCaller \
             -I {input.CS_bam} \
             -O {output.gvcf} \
@@ -72,7 +73,7 @@ rule combine_gvcfs_til:
         til_gvcf = f"{data_dir}/til.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk CombineGVCFs \
             -R {input.ref} \
             --variant {input.SOP12_gvcf} \
@@ -92,7 +93,7 @@ rule combine_gvcfs_caes:
         caes_gvcf = f"{data_dir}/caes.g.vcf.gz"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk CombineGVCFs \
             -R {input.ref} \
             --variant {input.UTC1_gvcf} \
@@ -111,7 +112,7 @@ rule joint_genotype_til:
         til_vcf=f"{data_dir}/til.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk GenotypeGVCFs \
             -R {input.ref} \
             -V {input.til_gvcf} \
@@ -130,7 +131,7 @@ rule joint_genotype_caes:
         caes_vcf=f"{data_dir}/caes.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
         gatk GenotypeGVCFs \
             -R {input.ref} \
             -V {input.caes_gvcf} \
