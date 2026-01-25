@@ -64,7 +64,7 @@ rule mark_duplicates:
         sorted_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1.bam"
     output:
         MD_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD.bam",
-        metrics_file=f"{star_pas2_dir}/{{sample}}_STAR_TWN_v1_MD.txt"
+        metrics_file=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD.txt"
     shell:
         """
         module load picard/3.3.0-Java-17
