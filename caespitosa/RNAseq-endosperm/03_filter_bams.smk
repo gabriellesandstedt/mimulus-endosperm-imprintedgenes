@@ -10,7 +10,7 @@
 import os 
 
 # assign directories
-star_pass2_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq/star_pass"
+star_pass_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
 # assign samples
@@ -23,10 +23,10 @@ ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
 rule all:
     input:
         f"{ref_dir}/{ref}.dict",
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1.bam", sample=samples),
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD.bam", sample=samples),
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam", sample=samples),
-        expand(f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split_Q60.bam", sample=samples)
+        expand(f"{star_pass_dir}/{{sample}}_STAR_TWN_v1.bam", sample=samples),
+        expand(f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD.bam", sample=samples),
+        expand(f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam", sample=samples),
+        expand(f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD_Split_Q60.bam", sample=samples)
 
 # create index file for reference genome
 rule index_reference:
@@ -46,10 +46,10 @@ rule index_reference:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule sort_and_index_bam:
     input:
-        bam=f"{star_pass2_dir}/{{sample}}.Aligned.sortedByCoord.out.bam"
+        bam=f"{star_pass_dir}/{{sample}}.Aligned.sortedByCoord.out.bam"
     output:
-        sorted_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1.bam",
-        sorted_bai=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1.bam.bai"
+        sorted_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1.bam",
+        sorted_bai=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1.bam.bai"
     shell:
         """
         module load SAMtools/1.21-GCC-13.3.0
@@ -57,15 +57,14 @@ rule sort_and_index_bam:
         samtools index {output.sorted_bam}
         """
 
-
 # define rule to mark duplicates
 # picard v 2.27: https://broadinstitute.github.io/picard/
 rule mark_duplicates:
     input:
-        sorted_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1.bam"
+        sorted_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1.bam"
     output:
-        MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD.bam",
-        metrics_file=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD.txt"
+        MD_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD.bam",
+        metrics_file=f"{star_pas2_dir}/{{sample}}_STAR_TWN_v1_MD.txt"
     shell:
         """
         module load picard/3.3.0-Java-17
@@ -76,10 +75,10 @@ rule mark_duplicates:
 # GATK v 4.4: https://gatk.broadinstitute.org/hc/en-us
 rule split_trim_reads:
     input:
-        MD_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD.bam",
+        MD_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD.bam",
         fa2 = f"{ref_dir}/{ref}"
     output:
-        split_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam"
+        split_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
@@ -90,9 +89,9 @@ rule split_trim_reads:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule filter_unique_reads:
     input:
-        split_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam"
+        split_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD_Split.bam"
     output:
-        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split_Q60.bam"
+        filtered_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD_Split_Q60.bam"
     shell:
         """
         module load SAMtools/1.21-GCC-13.3.0
@@ -104,7 +103,7 @@ rule filter_unique_reads:
 # samtools v 1.16: https://github.com/samtools/samtools
 rule flagstat_quality_check:
     input:
-        filtered_bam=f"{star_pass2_dir}/{{sample}}_STAR_TWN_v1_MD_Split_Q60.bam"
+        filtered_bam=f"{star_pass_dir}/{{sample}}_STAR_TWN_v1_MD_Split_Q60.bam"
     shell:
         """
         module load SAMtools/1.21-GCC-13.3.0
