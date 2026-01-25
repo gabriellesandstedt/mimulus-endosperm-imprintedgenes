@@ -11,11 +11,11 @@ import os
 from snakemake.io import expand
 
 # Define the paths to data files
-data_dir = "/scratch/gds44474/MIMULUS/caes_genome/data/snp_caes"
-ref_dir = "/scratch/gds44474/MIMULUS/caes_genome"
+data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
+ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
-# reference genome: Mimulus LVR1 v1 
-ref = "Mimulus_caespitosa_var_TWN36.mainGenome.fasta"
+# reference genome: Mimulus TWN v1 
+ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
 # define interval list with list of chromosomes
 interval_list = "intervals.list"
 # assign samples
@@ -24,23 +24,23 @@ samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
 # define all output files for rule all 
 rule all:
     input:
-        expand(f"{ref_dir}/Mimulus_caespitosa_var_TWN36.mainGenome.fasta"),
+        expand(f"{ref_dir}/Mcaespitosavar_TWN36_992_v1.1.fa"),
         expand(f"{data_dir}/{{sample}}.g.vcf.gz", sample=samples),
         expand(f"{data_dir}/til.vcf"),
         expand(f"{data_dir}/caes.vcf")
 
-rule index_reference:
-    input:
-        ref = f"{ref_dir}/{ref}"
-    output:
-        index = f"{ref_dir}/Mimulus_caespitosa_var_TWN36.mainGenome.dict"
-    shell:
-        """
-        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
-        gatk CreateSequenceDictionary \
-            -R {input.ref} \
-            -O {output.index}
-        """
+#rule index_reference:
+#    input:
+#        ref = f"{ref_dir}/{ref}"
+#    output:
+#        index = f"{ref_dir}/Mimulus_caespitosa_var_TWN36.mainGenome.dict"
+#    shell:
+#        """
+#        module load GATK/4.4.0.0-GCCcore-12.3.0-Java-17
+#        gatk CreateSequenceDictionary \
+#            -R {input.ref} \
+#            -O {output.index}
+#        """
 
 # define rule to call potential variants for each sample
 rule hap_caller:
