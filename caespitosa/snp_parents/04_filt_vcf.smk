@@ -213,8 +213,8 @@ rule split_caes_vcf:
         """ 
 
 # assign rule to filter by depth of tilingii samples 
-# mean covg LVR1:  19.8883X ; SD: 217.7351X, 456X
-# mean covg SOP12: 5.1852X ; SD: 37.8336X, 82X
+# mean covg LVR1:  24.5452X ; SD: 401.2477X; 829X
+# mean covg SOP12: 6.166X ; SD: 53.1644X; 115X
 # max DP = 2 x SD + mean 
 rule filt_dp_til:
     input:
@@ -226,13 +226,13 @@ rule filt_dp_til:
     shell:
         """
         module load VCFtools/0.1.16-GCC-13.3.0
-        vcftools --vcf {input.SOP12_vcf} --maxDP 82 --recode --recode-INFO-all --out {output.SOP12_dp_vcf}
-        vcftools --vcf {input.LVR1_vcf} --maxDP 456 --recode --recode-INFO-all --out {output.LVR1_dp_vcf}
+        vcftools --vcf {input.SOP12_vcf} --maxDP 115 --recode --recode-INFO-all --out {output.SOP12_dp_vcf}
+        vcftools --vcf {input.LVR1_vcf} --maxDP 829 --recode --recode-INFO-all --out {output.LVR1_dp_vcf}
         """ 
         
 # assign rule to filter by depth of caespitosa samples 
-# mean covg UTC1: 5.8009X ; SD: 41.4043X , 90X
-# mean covg TWN36: 8.5451X ; SD: 50.814X, 111X
+# mean covg UTC1: 6.5779X ; SD: 58.5669X , 125X
+# mean covg TWN36: 8.5451X ; SD: 50.814X, 158X
 # max DP = 2 x SD + mean 
 rule filt_dp_caes:
     input:
@@ -244,8 +244,8 @@ rule filt_dp_caes:
     shell:
         """
         module load VCFtools/0.1.16-GCC-13.3.0
-        vcftools --vcf {input.UTC1_vcf} --maxDP 90  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
-        vcftools --vcf {input.TWN36_vcf} --maxDP 111  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
+        vcftools --vcf {input.UTC1_vcf} --maxDP 125  --recode --recode-INFO-all --out {output.UTC1_dp_vcf}
+        vcftools --vcf {input.TWN36_vcf} --maxDP 158  --recode --recode-INFO-all --out {output.TWN36_dp_vcf}
         """     
 
 # assign rule to bgzip and index all vcfs 
