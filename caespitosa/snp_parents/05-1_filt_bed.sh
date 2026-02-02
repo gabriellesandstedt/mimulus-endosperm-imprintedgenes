@@ -13,3 +13,7 @@ $11 ~ /^[01][\/|][01]/ && $12 ~ /^[01][\/|][01]/ {
 
     print $1,$2,$3,alleleA">"alleleB
 }' til.bed > diagnostic_snps_tilsp_SOP_LVR_caesref.bed
+
+
+#### sop12 is sp A, LVR sp B
+### utc1 is sp A, twn is spB
