@@ -15,7 +15,7 @@ data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 
 # reference genome: Mimulus LVR v1 
-ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
+ref = "Mtilingiivar_LVR_860_v1.0.fa"
 
 # assign samples for individual depth filtering
 samples = ["SRR12424410", "SRR3103524", "SRR12424419", "SRR12424421"]
