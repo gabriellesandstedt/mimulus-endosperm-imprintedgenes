@@ -4,7 +4,7 @@
 ################################################################################
 ## AUTHOR: Gabrielle Sandstedt
 ## snakemake version: 6.3.0
-## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 05_feature_counts.smk
+## command to run snakemake script: snakemake --rerun-incomplete  --latency-wait 60  --cores 4 -s 04_rename.smk
 ################################################################################
 ################################################################################
 import os
@@ -13,8 +13,6 @@ import os
 star_pass2_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 ref_dir="/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
-# assign gff
-gff = "Mcaespitosavar_TWN36_992_v1.1.gene_exon.gff3"
 
 def get_output_filenames():
     prefix_mapping = {
@@ -44,14 +42,4 @@ rule rename_files:
         for old_file, new_file in zip(input, output.output_files):
             shell("mv {old_file} {new_file}")
 
-rule gff3_to_gtf:
-    input:
-        gff=f"{ref_dir}/{gff}"
-    output:
-        gtf=f"Mcaespitosavar_TWN36_992_v1.1.gene_exon.gtf"
-    shell:
-        """
-        ml gffread/0.12.7-GCCcore-12.3.0
-        gffread {input.gff} -T -o {output.gtf}
-        """
 
