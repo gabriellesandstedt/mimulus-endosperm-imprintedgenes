@@ -25,7 +25,7 @@ rule joint_genotype_all:
         all_vcf=f"{data_dir}/til_allsites.vcf"
     shell:
         """
-        module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
+        module load GATK/4.6.0.0-GCCcore-13.2.0-Java-17
         gatk GenotypeGVCFs \
             -R {input.ref} \
             -V {input.all_gvcf} \
