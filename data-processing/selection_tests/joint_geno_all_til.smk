@@ -6,7 +6,7 @@ data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/til_rnaseq"
 
 # reference genome: Mimulus LVR1 v1 
-ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
+ref = "Mtilingiivar_LVR_860_v1.0.fa"
 # define interval list with list of chromosomes
 interval_list = "intervals.list"
 # assign samples
