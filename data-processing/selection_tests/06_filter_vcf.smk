@@ -1,17 +1,17 @@
-data_dir = "/scratch/gds44474/MIMULUS/selection_tests/data"
-ref_dir = "/scratch/gds44474/MIMULUS/ref_genome_til"
+data_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
+ref_dir = "/scratch/gds44474/MIMULUS/rna_seq_26/caes_rnaseq"
 
-# reference genome: Mimulus LVR1 v1 
-ref = "Mimulus_tilingii_var_LVR.mainGenome.fasta"
+# reference genome: TWN 
+ref = "Mcaespitosavar_TWN36_992_v1.1.fa"
 
 
 # select biallelic SNPs
 rule select_biallelic_snps:
     input:
         ref=f"{ref_dir}/{ref}",
-        vcf=f"{data_dir}/til_caes_gutt.vcf"
+        vcf=f"{data_dir}/caes_allsites.vcf"
     output:
-        biallelic_vcf=f"{data_dir}/til_caes_gutt_biallelic_snps.vcf"
+        biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -27,9 +27,9 @@ rule select_biallelic_snps:
 rule select_invariant_sites:
     input:
         ref=f"{ref_dir}/{ref}",
-        vcf=f"{data_dir}/til_caes_gutt.vcf"
+        vcf=f"{data_dir}/caes_allsites.vcf"
     output:
-        invariant_vcf=f"{data_dir}/til_caes_gutt_invariant.vcf"
+        invariant_vcf=f"{data_dir}/caes_invariant.vcf"
     shell:
         """
         module load  GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -44,10 +44,10 @@ rule select_invariant_sites:
 rule variant_table:
     input:
         ref=f"{ref_dir}/{ref}",
-        biallelic_vcf=f"{data_dir}/til_caes_biallelic_snps.vcf",
+        biallelic_vcf=f"{data_dir}/caes_biallelic_snps.vcf",
         rscript=f"{data_dir}/filtering_diagnostics.R"
     output:
-        table=f"{data_dir}/til_caes_variant.table"
+        table=f"{data_dir}/caes_variant.table"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
@@ -67,7 +67,7 @@ rule invariant_table:
         invariant_vcf=f"{data_dir}/til_caes_invariant_geno_called.vcf",
         rscript=f"{data_dir}/filtering_diagnostics.R"
     output:
-        table=f"{data_dir}/til_caes_invariant.table"
+        table=f"{data_dir}/caes_invariant.table"
     shell:
         """
         module load GATK/4.4.0.0-GCCcore-11.3.0-Java-17
